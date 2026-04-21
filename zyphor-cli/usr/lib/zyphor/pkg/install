@@ -1,52 +1,165 @@
 #!/bin/bash
 
-# zyphor pkg install <package-name>
+# ==================================================
+# Zyphor Install Resolver Engine v2 (registry-driven)
+# Supports: apt | repo | deb | internal
+# Registry format: apps + repos
+# ==================================================
 
+REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
+CACHE_FILE="/tmp/zyphor_registry.json"
+
+# ==================================================
+# MAIN FUNCTION
+# ==================================================
 zyphor_pkg_install() {
-  PKG="$3"
+
+  APP="$3"
 
   # ===== Validate input =====
-  if [ -z "$PKG" ]; then
+  if [ -z "$APP" ]; then
     echo ""
-    echo "Zyphor: ✖ Missing package name"
-    echo "Usage: zyphor pkg install <package>"
+    echo "Zyphor: ✖ Missing app name"
+    echo "Usage: zyphor pkg install <app>"
     echo ""
     return 1
   fi
 
-  # ===== Check root =====
+  # ===== Root check =====
   if [ "$EUID" -ne 0 ]; then
     echo ""
-    echo "Zyphor: ⚠ This action requires root privileges"
-    echo "Try: sudo zyphor pkg install $PKG"
+    echo "Zyphor: ⚠ Requires root privileges"
+    echo "Try: sudo zyphor pkg install $APP"
     echo ""
     return 1
   fi
 
-  # ===== Check if already installed =====
-  if dpkg -l | grep -q "^ii  $PKG "; then
-    echo ""
-    echo "Zyphor: ⚠ Package '$PKG' is already installed"
-    echo ""
-    return 0
+  # ==================================================
+  # FETCH REGISTRY (REMOTE → CACHE FALLBACK)
+  # ==================================================
+  echo ""
+  echo "Zyphor: Fetching registry..."
+
+  if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
+    echo "Zyphor: ⚠ Failed to fetch remote registry"
+
+    if [ ! -f "$CACHE_FILE" ]; then
+      echo "Zyphor: ✖ No local cache available"
+      return 1
+    fi
+
+    echo "Zyphor: Using cached registry..."
   fi
 
-  # ===== Update package list (silent + faster UX) =====
-  echo ""
-  echo "Zyphor: Updating package list..."
-  apt update -qq
+  # ==================================================
+  # RESOLVE APP
+  # ==================================================
+  TYPE=$(jq -r ".apps.\"$APP\".type" "$CACHE_FILE")
+  PACKAGE=$(jq -r ".apps.\"$APP\".package" "$CACHE_FILE")
+  REPO_KEY=$(jq -r ".apps.\"$APP\".repo" "$CACHE_FILE")
+  MODULE=$(jq -r ".apps.\"$APP\".module" "$CACHE_FILE")
+  URL=$(jq -r ".apps.\"$APP\".url" "$CACHE_FILE")
 
-  # ===== Install package =====
-  echo "Zyphor: Installing '$PKG'..."
-  if apt install -y "$PKG"; then
+  # ===== Validate app =====
+  if [ "$TYPE" = "null" ] || [ -z "$TYPE" ]; then
     echo ""
-    echo "Zyphor: ✔ SUCCESS"
-    echo "Package '$PKG' installed successfully."
+    echo "Zyphor: ✖ App not found → $APP"
+    echo "Try: zyphor pkg search $APP"
+    echo ""
+    return 1
+  fi
+
+  # ==================================================
+  # INSTALL ENGINE
+  # ==================================================
+  echo ""
+  echo "Zyphor: Installing '$APP' (type: $TYPE)"
+  echo ""
+
+  case "$TYPE" in
+
+    # --------------------------
+    # APT INSTALL
+    # --------------------------
+    apt)
+      echo "Zyphor: APT install → $PACKAGE"
+      apt update -qq
+      apt install -y "$PACKAGE"
+      ;;
+
+    # --------------------------
+    # REPO INSTALL (FULL DYNAMIC)
+    # --------------------------
+    repo)
+      echo "Zyphor: Repo install via → $REPO_KEY"
+
+      REPO_KEY_URL=$(jq -r ".repos.\"$REPO_KEY\".key_url" "$CACHE_FILE")
+      REPO_LINE=$(jq -r ".repos.\"$REPO_KEY\".repo_line" "$CACHE_FILE")
+      REPO_FILE=$(jq -r ".repos.\"$REPO_KEY\".source_file" "$CACHE_FILE")
+
+      # ===== Validate repo =====
+      if [ "$REPO_LINE" = "null" ] || [ -z "$REPO_LINE" ]; then
+        echo "Zyphor: ✖ Repo not found → $REPO_KEY"
+        return 1
+      fi
+
+      # ===== Add repo key =====
+      if [ "$REPO_KEY_URL" != "null" ] && [ -n "$REPO_KEY_URL" ]; then
+        echo "Zyphor: Adding repo key..."
+        wget -q -O - "$REPO_KEY_URL" | apt-key add -
+      fi
+
+      # ===== Add repo source =====
+      if [ -n "$REPO_FILE" ] && [ "$REPO_FILE" != "null" ]; then
+        echo "Zyphor: Writing repo file → $REPO_FILE"
+        echo "$REPO_LINE" > "$REPO_FILE"
+      fi
+
+      apt update -qq
+      apt install -y "$PACKAGE"
+      ;;
+
+    # --------------------------
+    # DIRECT DEB INSTALL
+    # --------------------------
+    deb)
+      echo "Zyphor: Downloading .deb → $URL"
+
+      TMP_DEB="/tmp/zyphor_${APP}.deb"
+      wget -q "$URL" -O "$TMP_DEB"
+
+      echo "Zyphor: Installing .deb..."
+      dpkg -i "$TMP_DEB"
+      apt -f install -y
+      ;;
+
+    # --------------------------
+    # INTERNAL MODULE
+    # --------------------------
+    internal)
+      echo "Zyphor: Running module → $MODULE"
+      bash "/usr/lib/zyphor/modules/$MODULE/install.sh"
+      ;;
+
+    # --------------------------
+    # UNKNOWN TYPE
+    # --------------------------
+    *)
+      echo "Zyphor: ✖ Unknown type → $TYPE"
+      return 1
+      ;;
+  esac
+
+  # ==================================================
+  # RESULT
+  # ==================================================
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo "Zyphor: ✔ Installed '$APP' successfully"
     echo ""
   else
     echo ""
-    echo "Zyphor: ✖ FAILED"
-    echo "Could not install '$PKG'. Check package name or network."
+    echo "Zyphor: ✖ Failed installing '$APP'"
     echo ""
     return 1
   fi

@@ -1,39 +1,71 @@
 #!/bin/bash
 
-# zyphor pkg remove <package-name>
+# ==================================================
+# Zyphor pkg remove (registry-aware)
+# ==================================================
+
+REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
+CACHE_FILE="/tmp/zyphor_registry.json"
 
 zyphor_pkg_remove() {
-  PKG="$3"
+
+  APP="$3"
 
   # ===== Validate input =====
-  if [ -z "$PKG" ]; then
+  if [ -z "$APP" ]; then
     echo ""
-    echo "Zyphor: ✖ Missing package name"
-    echo "Usage: zyphor pkg remove <package>"
+    echo "Zyphor: ✖ Missing app name"
+    echo "Usage: zyphor pkg remove <app>"
     echo ""
     return 1
   fi
 
-  # ===== Check root =====
+  # ===== Root check =====
   if [ "$EUID" -ne 0 ]; then
     echo ""
-    echo "Zyphor: ⚠ This action requires root privileges"
-    echo "Try: sudo zyphor pkg remove $PKG"
+    echo "Zyphor: ⚠ Requires root privileges"
+    echo "Try: sudo zyphor pkg remove $APP"
     echo ""
     return 1
   fi
 
-  # ===== Check if installed =====
-  if ! dpkg -l | grep -q "^ii  $PKG "; then
-    echo ""
-    echo "Zyphor: ⚠ Package '$PKG' is not installed"
-    echo ""
-    return 0
+  # ==================================================
+  # LOAD REGISTRY
+  # ==================================================
+  echo ""
+  echo "Zyphor: Loading registry..."
+
+  if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
+    echo "Zyphor: ⚠ Using cached registry..."
+
+    if [ ! -f "$CACHE_FILE" ]; then
+      echo "Zyphor: ✖ No registry available"
+      return 1
+    fi
   fi
 
-  # ===== Confirm removal (safety layer) =====
+  # ==================================================
+  # RESOLVE APP
+  # ==================================================
+  TYPE=$(jq -r ".apps.\"$APP\".type" "$CACHE_FILE")
+  PACKAGE=$(jq -r ".apps.\"$APP\".package" "$CACHE_FILE")
+  REPO=$(jq -r ".apps.\"$APP\".repo" "$CACHE_FILE")
+  MODULE=$(jq -r ".apps.\"$APP\".module" "$CACHE_FILE")
+
+  # ===== Validate app exists =====
+  if [ "$TYPE" = "null" ] || [ -z "$TYPE" ]; then
+    echo ""
+    echo "Zyphor: ✖ App not found → $APP"
+    return 1
+  fi
+
+  # ==================================================
+  # SAFETY CONFIRMATION
+  # ==================================================
   echo ""
-  read -p "Zyphor: Are you sure you want to remove '$PKG'? [y/N]: " CONFIRM
+  echo "Zyphor: You are about to remove → $APP ($TYPE)"
+  read -p "Continue? [y/N]: " CONFIRM
+
   case "$CONFIRM" in
     y|Y) ;;
     *)
@@ -43,28 +75,60 @@ zyphor_pkg_remove() {
       ;;
   esac
 
-  # ===== Remove package =====
+  # ==================================================
+  # REMOVE ENGINE
+  # ==================================================
   echo ""
-  echo "Zyphor: Removing '$PKG'..."
-  if apt remove -y "$PKG"; then
-    echo ""
-    echo "Zyphor: ✔ SUCCESS"
-    echo "Package '$PKG' removed."
-    
-    # ===== Optional cleanup =====
-    echo ""
-    read -p "Zyphor: Run autoremove for unused dependencies? [y/N]: " AUTO
-    if [[ "$AUTO" =~ ^[yY]$ ]]; then
-      apt autoremove -y
-      echo "Zyphor: ✔ Cleanup complete"
-    fi
+  echo "Zyphor: Removing '$APP'..."
+  echo ""
 
-    echo ""
-  else
-    echo ""
-    echo "Zyphor: ✖ FAILED"
-    echo "Could not remove '$PKG'."
-    echo ""
-    return 1
+  case "$TYPE" in
+
+    # --------------------------
+    # APT / REPO APPS
+    # --------------------------
+    apt|repo)
+      echo "Zyphor: Removing APT package → $PACKAGE"
+      apt remove -y "$PACKAGE"
+      ;;
+
+    # --------------------------
+    # DEB INSTALLED APPS
+    # --------------------------
+    deb)
+      echo "Zyphor: Removing DEB package → $PACKAGE"
+      apt remove -y "$PACKAGE"
+      ;;
+
+    # --------------------------
+    # INTERNAL MODULE
+    # --------------------------
+    internal)
+      echo "Zyphor: Removing internal module → $MODULE"
+      bash "/usr/lib/zyphor/modules/$MODULE/remove.sh"
+      ;;
+
+    # --------------------------
+    # UNKNOWN TYPE
+    # --------------------------
+    *)
+      echo "Zyphor: ✖ Unknown type → $TYPE"
+      return 1
+      ;;
+  esac
+
+  # ==================================================
+  # CLEANUP OPTION
+  # ==================================================
+  echo ""
+  read -p "Zyphor: Run autoremove (cleanup dependencies)? [y/N]: " AUTO
+
+  if [[ "$AUTO" =~ ^[yY]$ ]]; then
+    apt autoremove -y
+    echo "Zyphor: ✔ Cleanup complete"
   fi
+
+  echo ""
+  echo "Zyphor: ✔ Successfully removed '$APP'"
+  echo ""
 }

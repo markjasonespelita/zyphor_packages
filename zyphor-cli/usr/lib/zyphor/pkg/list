@@ -1,31 +1,91 @@
 #!/bin/bash
 
-# zyphor pkg list
+# ==================================================
+# Zyphor pkg list (registry-aware)
+# Shows apps installed via Zyphor system
+# ==================================================
+
+CACHE_FILE="/tmp/zyphor_registry.json"
+REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
 
 zyphor_pkg_list() {
 
   echo ""
-  echo "Zyphor: Fetching installed packages..."
+  echo "Zyphor: Fetching registry + installed apps..."
   echo ""
 
-  # ===== Get installed packages =====
-  PKGS=$(dpkg -l | awk '/^ii/ {print $2}')
+  # ==================================================
+  # LOAD REGISTRY
+  # ==================================================
+  if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
+    echo "Zyphor: ⚠ Using cached registry..."
 
-  # ===== Check if empty (edge case) =====
-  if [ -z "$PKGS" ]; then
-    echo "Zyphor: ⚠ No installed packages found"
-    echo ""
+    if [ ! -f "$CACHE_FILE" ]; then
+      echo "Zyphor: ✖ No registry available"
+      return 1
+    fi
+  fi
+
+  # ==================================================
+  # GET ALL APPS FROM REGISTRY
+  # ==================================================
+  APPS=$(jq -r '.apps | keys[]' "$CACHE_FILE")
+
+  if [ -z "$APPS" ]; then
+    echo "Zyphor: ⚠ No apps found in registry"
     return 0
   fi
 
-  # ===== Display nicely =====
+  # ==================================================
+  # CHECK INSTALL STATUS
+  # ==================================================
   COUNT=0
-  for pkg in $PKGS; do
-    printf " - %s\n" "$pkg"
-    COUNT=$((COUNT + 1))
+
+  for app in $APPS; do
+
+    TYPE=$(jq -r ".apps.\"$app\".type" "$CACHE_FILE")
+    PACKAGE=$(jq -r ".apps.\"$app\".package" "$CACHE_FILE")
+
+    INSTALLED=0
+
+    # --------------------------
+    # Check based on type
+    # --------------------------
+    case "$TYPE" in
+
+      apt|repo)
+        if dpkg -l | grep -q "^ii  $PACKAGE "; then
+          INSTALLED=1
+        fi
+        ;;
+
+      deb)
+        # crude check: dpkg still tracks it
+        if dpkg -l | grep -q "$PACKAGE"; then
+          INSTALLED=1
+        fi
+        ;;
+
+      internal)
+        # check if module folder exists
+        if [ -d "/usr/lib/zyphor/modules/$PACKAGE" ]; then
+          INSTALLED=1
+        fi
+        ;;
+
+    esac
+
+    # --------------------------
+    # Display installed only
+    # --------------------------
+    if [ "$INSTALLED" -eq 1 ]; then
+      printf " ✔ %s (%s)\n" "$app" "$TYPE"
+      COUNT=$((COUNT + 1))
+    fi
+
   done
 
   echo ""
-  echo "Zyphor: ✔ TOTAL PACKAGES: $COUNT"
+  echo "Zyphor: ✔ TOTAL ZYPHOR APPS INSTALLED: $COUNT"
   echo ""
 }
