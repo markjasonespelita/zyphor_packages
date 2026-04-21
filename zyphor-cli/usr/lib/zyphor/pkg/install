@@ -1,17 +1,3 @@
-#!/bin/bash
-
-# ==================================================
-# Zyphor Install Resolver Engine v2 (registry-driven)
-# Supports: apt | repo | deb | internal
-# Registry format: apps + repos
-# ==================================================
-
-REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
-CACHE_FILE="/tmp/zyphor_registry.json"
-
-# ==================================================
-# MAIN FUNCTION
-# ==================================================
 zyphor_pkg_install() {
 
   APP="$3"
@@ -35,7 +21,7 @@ zyphor_pkg_install() {
   fi
 
   # ==================================================
-  # FETCH REGISTRY (REMOTE → CACHE FALLBACK)
+  # FETCH REGISTRY
   # ==================================================
   echo ""
   echo "Zyphor: Fetching registry..."
@@ -60,18 +46,18 @@ zyphor_pkg_install() {
   MODULE=$(jq -r ".apps.\"$APP\".module" "$CACHE_FILE")
   URL=$(jq -r ".apps.\"$APP\".url" "$CACHE_FILE")
 
+  # NEW: FLAGS + CHANNEL
+  FLAGS=$(jq -r ".apps.\"$APP\".flags // empty" "$CACHE_FILE")
+  CHANNEL=$(jq -r ".apps.\"$APP\".channel // empty" "$CACHE_FILE")
+
   # ===== Validate app =====
   if [ "$TYPE" = "null" ] || [ -z "$TYPE" ]; then
     echo ""
     echo "Zyphor: ✖ App not found → $APP"
-    echo "Try: zyphor pkg search $APP"
     echo ""
     return 1
   fi
 
-  # ==================================================
-  # INSTALL ENGINE
-  # ==================================================
   echo ""
   echo "Zyphor: Installing '$APP' (type: $TYPE)"
   echo ""
@@ -79,16 +65,17 @@ zyphor_pkg_install() {
   case "$TYPE" in
 
     # --------------------------
-    # APT INSTALL
+    # APT INSTALL (FLAGS SUPPORT)
     # --------------------------
     apt)
       echo "Zyphor: APT install → $PACKAGE"
+
       apt update -qq
-      apt install -y "$PACKAGE"
+      apt install $FLAGS "$PACKAGE"
       ;;
 
     # --------------------------
-    # REPO INSTALL (FULL DYNAMIC)
+    # REPO INSTALL
     # --------------------------
     repo)
       echo "Zyphor: Repo install via → $REPO_KEY"
@@ -97,30 +84,27 @@ zyphor_pkg_install() {
       REPO_LINE=$(jq -r ".repos.\"$REPO_KEY\".repo_line" "$CACHE_FILE")
       REPO_FILE=$(jq -r ".repos.\"$REPO_KEY\".source_file" "$CACHE_FILE")
 
-      # ===== Validate repo =====
       if [ "$REPO_LINE" = "null" ] || [ -z "$REPO_LINE" ]; then
         echo "Zyphor: ✖ Repo not found → $REPO_KEY"
         return 1
       fi
 
-      # ===== Add repo key =====
       if [ "$REPO_KEY_URL" != "null" ] && [ -n "$REPO_KEY_URL" ]; then
         echo "Zyphor: Adding repo key..."
         wget -q -O - "$REPO_KEY_URL" | apt-key add -
       fi
 
-      # ===== Add repo source =====
       if [ -n "$REPO_FILE" ] && [ "$REPO_FILE" != "null" ]; then
         echo "Zyphor: Writing repo file → $REPO_FILE"
         echo "$REPO_LINE" > "$REPO_FILE"
       fi
 
       apt update -qq
-      apt install -y "$PACKAGE"
+      apt install $FLAGS "$PACKAGE"
       ;;
 
     # --------------------------
-    # DIRECT DEB INSTALL
+    # DEB INSTALL
     # --------------------------
     deb)
       echo "Zyphor: Downloading .deb → $URL"
@@ -128,26 +112,30 @@ zyphor_pkg_install() {
       TMP_DEB="/tmp/zyphor_${APP}.deb"
       wget -q "$URL" -O "$TMP_DEB"
 
-      echo "Zyphor: Installing .deb..."
-      dpkg -i "$TMP_DEB"
+      dpkg -i $FLAGS "$TMP_DEB"
       apt -f install -y
       ;;
 
     # --------------------------
-    # SNAP INSTALL
+    # SNAP INSTALL (FLAGS + CHANNEL SUPPORT)
     # --------------------------
     snap)
       echo "Zyphor: Snap install → $PACKAGE"
 
-      # Ensure snap exists
       if ! command -v snap >/dev/null 2>&1; then
         echo "Zyphor: Installing snapd..."
         apt update -qq
         apt install -y snapd
       fi
 
-      # Install snap package
-      snap install "$PACKAGE"
+      # DEFAULT CHANNEL
+      if [ -z "$CHANNEL" ] || [ "$CHANNEL" = "null" ]; then
+        CHANNEL="stable"
+      fi
+
+      echo "Zyphor: Channel → $CHANNEL"
+
+      snap install "$PACKAGE" $FLAGS --channel="$CHANNEL"
       ;;
 
     # --------------------------

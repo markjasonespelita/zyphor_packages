@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # ==================================================
-# Zyphor pkg list (registry-aware)
+# Zyphor pkg list (registry-aware v2)
 # Shows apps installed via Zyphor system
+# Supports: apt | repo | snap | deb | internal
 # ==================================================
 
 CACHE_FILE="/tmp/zyphor_registry.json"
@@ -27,7 +28,7 @@ zyphor_pkg_list() {
   fi
 
   # ==================================================
-  # GET ALL APPS FROM REGISTRY
+  # GET ALL APPS
   # ==================================================
   APPS=$(jq -r '.apps | keys[]' "$CACHE_FILE")
 
@@ -48,29 +49,38 @@ zyphor_pkg_list() {
 
     INSTALLED=0
 
-    # --------------------------
-    # Check based on type
-    # --------------------------
     case "$TYPE" in
 
+      # --------------------------
+      # APT / REPO
+      # --------------------------
       apt|repo)
-        if dpkg -l | grep -q "^ii  $PACKAGE "; then
+        if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
           INSTALLED=1
         fi
         ;;
 
+      # --------------------------
+      # SNAP
+      # --------------------------
       snap)
         if snap list 2>/dev/null | awk '{print $1}' | grep -qx "$PACKAGE"; then
           INSTALLED=1
         fi
         ;;
 
+      # --------------------------
+      # DEB
+      # --------------------------
       deb)
-        if dpkg -l | grep -q "$PACKAGE"; then
+        if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
           INSTALLED=1
         fi
         ;;
 
+      # --------------------------
+      # INTERNAL MODULE
+      # --------------------------
       internal)
         if [ -d "/usr/lib/zyphor/modules/$PACKAGE" ]; then
           INSTALLED=1
@@ -79,11 +89,11 @@ zyphor_pkg_list() {
 
     esac
 
-    # --------------------------
-    # Display installed only
-    # --------------------------
+    # ==================================================
+    # OUTPUT
+    # ==================================================
     if [ "$INSTALLED" -eq 1 ]; then
-      printf " ✔ %s (%s)\n" "$app" "$TYPE"
+      printf " ✔ %-30s [%s]\n" "$app" "$TYPE"
       COUNT=$((COUNT + 1))
     fi
 

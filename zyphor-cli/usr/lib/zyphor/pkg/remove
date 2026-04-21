@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ==================================================
-# Zyphor pkg remove (registry-aware)
+# Zyphor pkg remove (registry-aware v2)
+# Supports: apt | repo | snap | deb | internal
 # ==================================================
 
 REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
@@ -49,7 +50,6 @@ zyphor_pkg_remove() {
   # ==================================================
   TYPE=$(jq -r ".apps.\"$APP\".type" "$CACHE_FILE")
   PACKAGE=$(jq -r ".apps.\"$APP\".package" "$CACHE_FILE")
-  REPO=$(jq -r ".apps.\"$APP\".repo" "$CACHE_FILE")
   MODULE=$(jq -r ".apps.\"$APP\".module" "$CACHE_FILE")
 
   # ===== Validate app exists =====
@@ -63,7 +63,12 @@ zyphor_pkg_remove() {
   # SAFETY CONFIRMATION
   # ==================================================
   echo ""
-  echo "Zyphor: You are about to remove → $APP ($TYPE)"
+  echo "Zyphor: You are about to remove:"
+  echo "  App   : $APP"
+  echo "  Type  : $TYPE"
+  echo "  Target: $PACKAGE"
+  echo ""
+
   read -p "Continue? [y/N]: " CONFIRM
 
   case "$CONFIRM" in
@@ -85,15 +90,20 @@ zyphor_pkg_remove() {
   case "$TYPE" in
 
     # --------------------------
-    # APT / REPO APPS
+    # APT / REPO
     # --------------------------
     apt|repo)
       echo "Zyphor: Removing APT package → $PACKAGE"
-      apt remove -y "$PACKAGE"
+
+      if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
+        apt remove -y "$PACKAGE"
+      else
+        echo "Zyphor: ⚠ Package not installed → $PACKAGE"
+      fi
       ;;
 
     # --------------------------
-    # SNAP APPS (NEW)
+    # SNAP
     # --------------------------
     snap)
       echo "Zyphor: Removing Snap package → $PACKAGE"
@@ -101,16 +111,21 @@ zyphor_pkg_remove() {
       if snap list 2>/dev/null | awk '{print $1}' | grep -qx "$PACKAGE"; then
         snap remove "$PACKAGE"
       else
-        echo "Zyphor: ⚠ Snap package not installed → $PACKAGE"
+        echo "Zyphor: ⚠ Snap not installed → $PACKAGE"
       fi
       ;;
 
     # --------------------------
-    # DEB INSTALLED APPS
+    # DEB
     # --------------------------
     deb)
       echo "Zyphor: Removing DEB package → $PACKAGE"
-      apt remove -y "$PACKAGE"
+
+      if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
+        apt remove -y "$PACKAGE"
+      else
+        echo "Zyphor: ⚠ DEB package not installed → $PACKAGE"
+      fi
       ;;
 
     # --------------------------
@@ -121,6 +136,9 @@ zyphor_pkg_remove() {
       bash "/usr/lib/zyphor/modules/$MODULE/remove.sh"
       ;;
 
+    # --------------------------
+    # UNKNOWN TYPE
+    # --------------------------
     *)
       echo "Zyphor: ✖ Unknown type → $TYPE"
       return 1
@@ -139,6 +157,6 @@ zyphor_pkg_remove() {
   fi
 
   echo ""
-  echo "Zyphor: ✔ Successfully removed '$APP'"
+  echo "Zyphor: ✔ Successfully processed removal of '$APP'"
   echo ""
 }

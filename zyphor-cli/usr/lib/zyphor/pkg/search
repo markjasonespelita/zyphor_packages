@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ==================================================
-# Zyphor pkg search (registry-aware v2)
-# Searches apps in Zyphor registry (name, package, type)
+# Zyphor pkg search (registry-aware v3)
+# Smart search across full registry metadata
 # ==================================================
 
 REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
@@ -26,7 +26,7 @@ zyphor_pkg_search() {
   echo ""
 
   # ==================================================
-  # FETCH REGISTRY (remote → cache fallback)
+  # FETCH REGISTRY
   # ==================================================
   if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
     echo "Zyphor: ⚠ Failed to fetch registry"
@@ -40,15 +40,17 @@ zyphor_pkg_search() {
   fi
 
   # ==================================================
-  # SMART SEARCH (JSON-aware)
+  # SMART SEARCH ENGINE
   # ==================================================
   MATCHES=$(jq -r --arg kw "$KEYWORD" '
     .apps
     | to_entries[]
     | select(
-        (.key | test($kw; "i")) or
-        (.value.package | test($kw; "i")) or
-        (.value.type | test($kw; "i"))
+        (.key        | ascii_downcase | contains($kw | ascii_downcase)) or
+        (.value.package // "" | ascii_downcase | contains($kw | ascii_downcase)) or
+        (.value.type    // "" | ascii_downcase | contains($kw | ascii_downcase)) or
+        (.value.repo    // "" | ascii_downcase | contains($kw | ascii_downcase)) or
+        (.value.channel // "" | ascii_downcase | contains($kw | ascii_downcase))
       )
     | .key
   ' "$CACHE_FILE")
@@ -74,8 +76,9 @@ zyphor_pkg_search() {
 
     TYPE=$(jq -r ".apps.\"$app\".type" "$CACHE_FILE")
     PACKAGE=$(jq -r ".apps.\"$app\".package" "$CACHE_FILE")
+    CHANNEL=$(jq -r ".apps.\"$app\".channel // \"stable\"" "$CACHE_FILE")
 
-    printf " - %-25s [%s] → %s\n" "$app" "$TYPE" "$PACKAGE"
+    printf " - %-28s [%s | %s] → %s\n" "$app" "$TYPE" "$CHANNEL" "$PACKAGE"
 
     COUNT=$((COUNT + 1))
 
