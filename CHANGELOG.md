@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.2.0...v1.3.0) (2026-04-21)
+
+
+### Features
+
+* added wallpapers default 2026-2027 downloadable and configurable. ([625699b](https://github.com/markjasonespelita/zyphor_packages/commit/625699bad46857708aa07ad220fae63fbf5b66ab))
+
 # [1.2.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.1.0...v1.2.0) (2026-04-21)
 
 
