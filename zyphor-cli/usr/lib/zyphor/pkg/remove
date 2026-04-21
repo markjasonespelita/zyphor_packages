@@ -93,6 +93,19 @@ zyphor_pkg_remove() {
       ;;
 
     # --------------------------
+    # SNAP APPS (NEW)
+    # --------------------------
+    snap)
+      echo "Zyphor: Removing Snap package → $PACKAGE"
+
+      if snap list 2>/dev/null | awk '{print $1}' | grep -qx "$PACKAGE"; then
+        snap remove "$PACKAGE"
+      else
+        echo "Zyphor: ⚠ Snap package not installed → $PACKAGE"
+      fi
+      ;;
+
+    # --------------------------
     # DEB INSTALLED APPS
     # --------------------------
     deb)
@@ -108,9 +121,6 @@ zyphor_pkg_remove() {
       bash "/usr/lib/zyphor/modules/$MODULE/remove.sh"
       ;;
 
-    # --------------------------
-    # UNKNOWN TYPE
-    # --------------------------
     *)
       echo "Zyphor: ✖ Unknown type → $TYPE"
       return 1

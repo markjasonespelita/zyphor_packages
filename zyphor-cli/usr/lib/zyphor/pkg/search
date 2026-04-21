@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ==================================================
-# Zyphor pkg search (registry-aware)
-# Searches apps, not system packages
+# Zyphor pkg search (registry-aware v2)
+# Searches apps in Zyphor registry (name, package, type)
 # ==================================================
 
 REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
@@ -26,13 +26,13 @@ zyphor_pkg_search() {
   echo ""
 
   # ==================================================
-  # FETCH REGISTRY
+  # FETCH REGISTRY (remote → cache fallback)
   # ==================================================
   if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
     echo "Zyphor: ⚠ Failed to fetch registry"
 
     if [ ! -f "$CACHE_FILE" ]; then
-      echo "Zyphor: ✖ No registry available"
+      echo "Zyphor: ✖ No cached registry available"
       return 1
     fi
 
@@ -40,10 +40,22 @@ zyphor_pkg_search() {
   fi
 
   # ==================================================
-  # SEARCH IN APPS
+  # SMART SEARCH (JSON-aware)
   # ==================================================
-  MATCHES=$(jq -r '.apps | keys[]' "$CACHE_FILE" | grep -i "$KEYWORD")
+  MATCHES=$(jq -r --arg kw "$KEYWORD" '
+    .apps
+    | to_entries[]
+    | select(
+        (.key | test($kw; "i")) or
+        (.value.package | test($kw; "i")) or
+        (.value.type | test($kw; "i"))
+      )
+    | .key
+  ' "$CACHE_FILE")
 
+  # ==================================================
+  # NO RESULTS
+  # ==================================================
   if [ -z "$MATCHES" ]; then
     echo "Zyphor: ⚠ No apps found for '$KEYWORD'"
     echo ""
@@ -63,7 +75,7 @@ zyphor_pkg_search() {
     TYPE=$(jq -r ".apps.\"$app\".type" "$CACHE_FILE")
     PACKAGE=$(jq -r ".apps.\"$app\".package" "$CACHE_FILE")
 
-    printf " - %-20s [%s] → %s\n" "$app" "$TYPE" "$PACKAGE"
+    printf " - %-25s [%s] → %s\n" "$app" "$TYPE" "$PACKAGE"
 
     COUNT=$((COUNT + 1))
 

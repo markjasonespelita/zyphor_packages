@@ -134,6 +134,23 @@ zyphor_pkg_install() {
       ;;
 
     # --------------------------
+    # SNAP INSTALL
+    # --------------------------
+    snap)
+      echo "Zyphor: Snap install → $PACKAGE"
+
+      # Ensure snap exists
+      if ! command -v snap >/dev/null 2>&1; then
+        echo "Zyphor: Installing snapd..."
+        apt update -qq
+        apt install -y snapd
+      fi
+
+      # Install snap package
+      snap install "$PACKAGE"
+      ;;
+
+    # --------------------------
     # INTERNAL MODULE
     # --------------------------
     internal)

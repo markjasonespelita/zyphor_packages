@@ -59,15 +59,19 @@ zyphor_pkg_list() {
         fi
         ;;
 
+      snap)
+        if snap list 2>/dev/null | awk '{print $1}' | grep -qx "$PACKAGE"; then
+          INSTALLED=1
+        fi
+        ;;
+
       deb)
-        # crude check: dpkg still tracks it
         if dpkg -l | grep -q "$PACKAGE"; then
           INSTALLED=1
         fi
         ;;
 
       internal)
-        # check if module folder exists
         if [ -d "/usr/lib/zyphor/modules/$PACKAGE" ]; then
           INSTALLED=1
         fi
