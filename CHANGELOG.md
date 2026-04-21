@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.3.1...v1.3.2) (2026-04-21)
+
+
+### Bug Fixes
+
+* fixed postrm script on the wallpapers default 2026-2027 package. ([e617db9](https://github.com/markjasonespelita/zyphor_packages/commit/e617db9109f0cbbb7536d55e80c40dccbad57ede))
+
 ## [1.3.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.3.0...v1.3.1) (2026-04-21)
 
 
