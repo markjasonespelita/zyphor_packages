@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+echo "Zyphor: Applying wallpapers setup..."
+
+TARGET_DIR="/usr/share/images/desktop-base"
+SRC_DIR="/usr/share/backgrounds/wallpapers-pragmata"
+
+mkdir -p "$TARGET_DIR"
+
+# safe symlinks (overwrite only if ours)
+ln -sfn "$SRC_DIR/pragmata-1.jpg" "$TARGET_DIR/pragmata-1"
+
+ln -sfn "$SRC_DIR/pragmata-2.jpg" "$TARGET_DIR/pragmata-2"
+
+ln -sfn "$SRC_DIR/pragmata-3.jpg" "$TARGET_DIR/pragmata-3"
+
+ln -sfn "$SRC_DIR/pragmata-4.jpg" "$TARGET_DIR/pragmata-4"
+
+ln -sfn "$SRC_DIR/pragmata-5.jpg" "$TARGET_DIR/pragmata-5"
+
+echo "Zyphor: Wallpapers configured."
