@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.1.0...v1.2.0) (2026-04-21)
+
+
+### Features
+
+* implement registry-driven install system with dynamic resolution. ([f3d91d6](https://github.com/markjasonespelita/zyphor_packages/commit/f3d91d6f2642334c0c8b0adcaf9f45f988b15712))
+
 # [1.1.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.0.0...v1.1.0) (2026-04-21)
 
 
