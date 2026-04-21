@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.3.2...v1.4.0) (2026-04-21)
+
+
+### Features
+
+* added snapd support. ([1079bf2](https://github.com/markjasonespelita/zyphor_packages/commit/1079bf2353dea9aab44bf25c53268efee0d5053d))
+
 ## [1.3.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.3.1...v1.3.2) (2026-04-21)
 
 
