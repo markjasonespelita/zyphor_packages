@@ -18,13 +18,13 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
 
   rm -f /usr/share/backgrounds/zyphor-grub-bootloader-screensavers
 
-  rm -f wallpapers-default-2026-2027/usr/share/backgrounds/backgrounds.png
+  rm -f /usr/share/backgrounds/backgrounds.png
 
-  rm -f wallpapers-default-2026-2027/usr/share/backgrounds/backgrounds2.png
+  rm -f /usr/share/backgrounds/backgrounds2.png
 
-  rm -f wallpapers-default-2026-2027/usr/share/backgrounds/backgrounds3.png
+  rm -f /usr/share/backgrounds/backgrounds3.png
 
-  rm -f wallpapers-default-2026-2027/usr/share/backgrounds/backgrounds4.png
+  rm -f /usr/share/backgrounds/backgrounds4.png
 
   echo "Zyphor: Cleanup done."
 fi
