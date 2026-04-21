@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.5.0...v1.5.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* fixed core help and version on version number of build and version number of the cli ([bf1a0a7](https://github.com/markjasonespelita/zyphor_packages/commit/bf1a0a7aed16756c926f8009a2b5ae8e6e30b200))
+
 # [1.5.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.4.0...v1.5.0) (2026-04-21)
 
 
