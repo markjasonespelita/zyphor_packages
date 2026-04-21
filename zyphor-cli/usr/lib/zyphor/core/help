@@ -6,7 +6,7 @@ help() {
 
   echo ""
   echo "=================================="
-  echo "          ZYPHOR OS CLI"
+  echo "          ZYPHOR OS CLI v1.2.0"
   echo "=================================="
   echo ""
 
@@ -30,10 +30,10 @@ help() {
   echo "SERVICE"
   echo "----------------------------------"
   printf "  %-30s %s\n" "service list"    "List all services"
-  printf "  %-30s %s\n" "service start"   "Start a service"
-  printf "  %-30s %s\n" "service stop"    "Stop a service"
-  printf "  %-30s %s\n" "service restart" "Restart a service"
-  printf "  %-30s %s\n" "service status"  "Show service status"
+  printf "  %-30s %s\n" "service start <name>"   "Start a service"
+  printf "  %-30s %s\n" "service stop <name>"    "Stop a service"
+  printf "  %-30s %s\n" "service restart <name>" "Restart a service"
+  printf "  %-30s %s\n" "service status <name>"  "Show service status"
   echo ""
 
   # ================= DOCTOR =================
@@ -42,6 +42,13 @@ help() {
   printf "  %-30s %s\n" "doctor scan"   "Scan system for issues"
   printf "  %-30s %s\n" "doctor fix"    "Fix detected issues"
   printf "  %-30s %s\n" "doctor report" "Generate system report"
+  echo ""
+
+  # ================= BUILD =================
+  echo "BUILD"
+  echo "----------------------------------"
+  printf "  %-30s %s\n" "build package [dir]" "Build a .deb package (default: current dir)"
+  printf "  %-30s %s\n" "build repo"          "Generate repository metadata (Packages.gz)"
   echo ""
 
   # ================= CORE =================
@@ -58,6 +65,8 @@ help() {
   echo "  zyphor pkg install nginx"
   echo "  zyphor service restart ssh"
   echo "  zyphor doctor scan"
+  echo "  zyphor build package zyphor-cli"
+  echo "  zyphor build repo"
   echo ""
 
   echo "=================================="

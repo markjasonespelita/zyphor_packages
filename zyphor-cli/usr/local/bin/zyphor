@@ -10,6 +10,18 @@ ACTION="$2"
 
 case "$CATEGORY" in
 
+  # ================= BUILD =================
+  build)
+    source /usr/lib/zyphor/build/package
+    source /usr/lib/zyphor/build/repo
+
+    case "$ACTION" in
+      package) zyphor_build_package "$@" ;;
+      repo)    zyphor_build_repo "$@" ;;
+      *) error "build $ACTION" ;;
+    esac
+    ;;
+
   # ================= PKG =================
   pkg)
     source /usr/lib/zyphor/pkg/install
