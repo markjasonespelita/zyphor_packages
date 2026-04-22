@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.6.0...v1.7.0) (2026-04-22)
+
+
+### Features
+
+* added 5 more wallpapers available. ([8f13265](https://github.com/markjasonespelita/zyphor_packages/commit/8f13265ae96a066fd66ee59621c7188499cc7c22))
+
 # [1.6.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.5.1...v1.6.0) (2026-04-21)
 
 
