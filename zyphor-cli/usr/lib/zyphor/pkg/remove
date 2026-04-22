@@ -1,6 +1,14 @@
+#!/bin/bash
+
 zyphor_pkg_remove() {
 
   APP="$3"
+
+  # ==================================================
+  # SAFE DEFAULTS (prevents curl issues)
+  # ==================================================
+  REGISTRY_URL="${REGISTRY_URL:-https://markjasonespelita.github.io/zyphor_repo/registry/registry.json}"
+  CACHE_FILE="${CACHE_FILE:-/tmp/zyphor_registry.json}"
 
   # ==================================================
   # VALIDATE INPUT
@@ -25,28 +33,34 @@ zyphor_pkg_remove() {
   fi
 
   # ==================================================
-  # LOAD REGISTRY
+  # LOAD REGISTRY (WITH FALLBACK)
   # ==================================================
   echo ""
   echo "Zyphor: Loading registry..."
 
   if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
-    echo "Zyphor: ⚠ Using cached registry..."
+    echo "Zyphor: ⚠ Failed writing to $CACHE_FILE"
 
-    if [ ! -f "$CACHE_FILE" ]; then
-      echo "Zyphor: ✖ No registry available"
-      return 1
-    fi
-  fi
+    CACHE_FILE="/var/tmp/zyphor_registry.json"
+    echo "Zyphor: Retrying → $CACHE_FILE"
+
+    if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
+      echo "Zyphor: ⚠ Using cached registry..."
+
+      if [ ! -f "$CACHE_FILE" ]; then
+        echo "Zyphor: ✖ No registry available"
+        return 1
+      fi
+    fi  fi
 
   # ==================================================
   # RESOLVE APP
   # ==================================================
-  TYPE=$(jq -r ".apps.\"$APP\".type" "$CACHE_FILE")
+  TYPE=$(jq -r ".apps.\"$APP\".type // empty" "$CACHE_FILE")
   PACKAGE=$(jq -r ".apps.\"$APP\".package // empty" "$CACHE_FILE")
   MODULE=$(jq -r ".apps.\"$APP\".module // empty" "$CACHE_FILE")
 
-  if [ "$TYPE" = "null" ] || [ -z "$TYPE" ]; then
+  if [ -z "$TYPE" ]; then
     echo ""
     echo "Zyphor: ✖ App not found → $APP"
     return 1
@@ -86,12 +100,27 @@ zyphor_pkg_remove() {
   case "$TYPE" in
 
     # --------------------------
-    # APT + DEB (UNIFIED)
+    # APT + DEB (UNIFIED + FALLBACK DETECTION)
     # --------------------------
     apt|deb)
+
+      # fallback if package missing
       if [ -z "$PACKAGE" ]; then
-        echo "Zyphor: ✖ Missing package name"
-        return 1
+        echo "Zyphor: ⚠ No package defined, attempting detection..."
+
+        PACKAGE=$(dpkg -l | awk '{print $2}' | grep -i "^$APP" | head -n 1)
+
+        # second fallback (looser match)
+        if [ -z "$PACKAGE" ]; then
+          PACKAGE=$(dpkg -l | awk '{print $2}' | grep -i "$APP" | head -n 1)
+        fi
+
+        if [ -z "$PACKAGE" ]; then
+          echo "Zyphor: ✖ Could not determine package name"
+          return 1
+        fi
+
+        echo "Zyphor: Using detected package → $PACKAGE"
       fi
 
       echo "Zyphor: Removing package → $PACKAGE"
@@ -107,6 +136,7 @@ zyphor_pkg_remove() {
     # SNAP
     # --------------------------
     snap)
+
       if [ -z "$PACKAGE" ]; then
         echo "Zyphor: ✖ Missing snap package"
         return 1
@@ -125,6 +155,7 @@ zyphor_pkg_remove() {
     # INTERNAL MODULE
     # --------------------------
     internal)
+
       if [ -z "$MODULE" ]; then
         echo "Zyphor: ✖ Missing module"
         return 1
