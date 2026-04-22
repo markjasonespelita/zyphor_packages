@@ -2,7 +2,7 @@
 
 # zyphor version
 
-build_version='v1.3.0 Beta.'
+build_version='v1.3.1 Stable.'
 
 version() {
   echo ""
