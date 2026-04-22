@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.1...v1.8.2) (2026-04-22)
+
+
+### Bug Fixes
+
+* changed list and remove pkg logic ([6b0ec25](https://github.com/markjasonespelita/zyphor_packages/commit/6b0ec25e0da1120e24f2ee93e5ec9e8acdf40fed))
+
 ## [1.8.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.0...v1.8.1) (2026-04-22)
 
 
