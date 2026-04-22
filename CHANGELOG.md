@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.7.2...v1.8.0) (2026-04-22)
+
+
+### Features
+
+* zyphor cli v1.4.0 removed repo support - replaced/added den support ([df70038](https://github.com/markjasonespelita/zyphor_packages/commit/df70038d98037863d6982b7b151cf6fe229b10fa))
+
 ## [1.7.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.7.1...v1.7.2) (2026-04-22)
 
 
