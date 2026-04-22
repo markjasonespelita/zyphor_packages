@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.2...v1.8.3) (2026-04-22)
+
+
+### Bug Fixes
+
+* first-time snap install = reliable, no random cancellations, no broken daemon state. ([32b981e](https://github.com/markjasonespelita/zyphor_packages/commit/32b981e639afc55af96de06f43ce3113c224620a))
+
 ## [1.8.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.1...v1.8.2) (2026-04-22)
 
 
