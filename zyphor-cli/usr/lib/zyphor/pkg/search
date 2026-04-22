@@ -1,3 +1,14 @@
+#!/bin/bash
+
+# ==================================================
+# Zyphor pkg search (registry-aware v4)
+# Clean + resilient + deb-aware
+# ==================================================
+
+# Safe defaults (prevents curl -o crash)
+REGISTRY_URL="${REGISTRY_URL:-https://markjasonespelita.github.io/zyphor_repo/registry/registry.json}"
+CACHE_FILE="${CACHE_FILE:-/tmp/zyphor_registry.json}"
+
 zyphor_pkg_search() {
 
   KEYWORD="$3"
@@ -18,6 +29,14 @@ zyphor_pkg_search() {
   echo ""
 
   # ==================================================
+  # VALIDATE CONFIG (prevents curl bug)
+  # ==================================================
+  if [ -z "$REGISTRY_URL" ] || [ -z "$CACHE_FILE" ]; then
+    echo "Zyphor: ✖ Internal error (missing registry config)"
+    return 1
+  fi
+
+  # ==================================================
   # FETCH REGISTRY
   # ==================================================
   if ! curl -fsSL "$REGISTRY_URL" -o "$CACHE_FILE"; then
@@ -32,17 +51,17 @@ zyphor_pkg_search() {
   fi
 
   # ==================================================
-  # SMART SEARCH ENGINE
+  # BUILD MATCHES (robust search)
   # ==================================================
-  MATCHES=$(jq -r --arg kw "$KEYWORD" '
+  MATCHES=$(jq -r --arg kw "$(echo "$KEYWORD" | tr '[:upper:]' '[:lower:]')" '
     .apps
     | to_entries[]
     | select(
-        (.key | ascii_downcase | contains($kw | ascii_downcase)) or
-        (.value.package // "" | ascii_downcase | contains($kw | ascii_downcase)) or
-        (.value.type // "" | ascii_downcase | contains($kw | ascii_downcase)) or
-        (.value.channel // "" | ascii_downcase | contains($kw | ascii_downcase)) or
-        (.value.url // "" | ascii_downcase | contains($kw | ascii_downcase))
+        (.key | ascii_downcase | contains($kw)) or
+        ((.value.package // "") | ascii_downcase | contains($kw)) or
+        ((.value.type // "") | ascii_downcase | contains($kw)) or
+        ((.value.channel // "") | ascii_downcase | contains($kw)) or
+        ((.value.url // "") | ascii_downcase | contains($kw))
       )
     | .key
   ' "$CACHE_FILE")
@@ -66,16 +85,15 @@ zyphor_pkg_search() {
   # ==================================================
   for app in $MATCHES; do
 
-    TYPE=$(jq -r ".apps.\"$app\".type" "$CACHE_FILE")
+    TYPE=$(jq -r ".apps.\"$app\".type // \"unknown\"" "$CACHE_FILE")
     PACKAGE=$(jq -r ".apps.\"$app\".package // \"-\"" "$CACHE_FILE")
     CHANNEL=$(jq -r ".apps.\"$app\".channel // \"-\"" "$CACHE_FILE")
     URL=$(jq -r ".apps.\"$app\".url // \"\"" "$CACHE_FILE")
 
-    # Better display for deb
     if [ "$TYPE" = "deb" ]; then
-      printf " - %-28s [%s] → %s\n" "$app" "$TYPE" "$URL"
+      printf " - %-28s [%-6s] → %s\n" "$app" "$TYPE" "$URL"
     else
-      printf " - %-28s [%s | %s] → %s\n" "$app" "$TYPE" "$CHANNEL" "$PACKAGE"
+      printf " - %-28s [%-6s | %-7s] → %s\n" "$app" "$TYPE" "$CHANNEL" "$PACKAGE"
     fi
 
     COUNT=$((COUNT + 1))
