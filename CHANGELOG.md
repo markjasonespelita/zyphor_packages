@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.0...v1.8.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* fixed zyphor cli pkg search module. ([4377357](https://github.com/markjasonespelita/zyphor_packages/commit/437735777ce45a75d7c41f64f1ff1901518f66c0))
+
 # [1.8.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.7.2...v1.8.0) (2026-04-22)
 
 
