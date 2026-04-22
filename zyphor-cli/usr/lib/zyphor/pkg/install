@@ -2,7 +2,9 @@ zyphor_pkg_install() {
 
   APP="$3"
 
-  # ===== Validate input =====
+  # ==================================================
+  # VALIDATE INPUT
+  # ==================================================
   if [ -z "$APP" ]; then
     echo ""
     echo "Zyphor: ✖ Missing app name"
@@ -11,7 +13,9 @@ zyphor_pkg_install() {
     return 1
   fi
 
-  # ===== Root check =====
+  # ==================================================
+  # ROOT CHECK
+  # ==================================================
   if [ "$EUID" -ne 0 ]; then
     echo ""
     echo "Zyphor: ⚠ Requires root privileges"
@@ -41,16 +45,19 @@ zyphor_pkg_install() {
   # RESOLVE APP
   # ==================================================
   TYPE=$(jq -r ".apps.\"$APP\".type" "$CACHE_FILE")
-  PACKAGE=$(jq -r ".apps.\"$APP\".package" "$CACHE_FILE")
-  REPO_KEY=$(jq -r ".apps.\"$APP\".repo" "$CACHE_FILE")
-  MODULE=$(jq -r ".apps.\"$APP\".module" "$CACHE_FILE")
-  URL=$(jq -r ".apps.\"$APP\".url" "$CACHE_FILE")
+  PACKAGE=$(jq -r ".apps.\"$APP\".package // empty" "$CACHE_FILE")
+  URL=$(jq -r ".apps.\"$APP\".url // empty" "$CACHE_FILE")
+  MODULE=$(jq -r ".apps.\"$APP\".module // empty" "$CACHE_FILE")
 
-  # NEW: FLAGS + CHANNEL
   FLAGS=$(jq -r ".apps.\"$APP\".flags // empty" "$CACHE_FILE")
   CHANNEL=$(jq -r ".apps.\"$APP\".channel // empty" "$CACHE_FILE")
 
-  # ===== Validate app =====
+  # Optional checksum
+  SHA256=$(jq -r ".apps.\"$APP\".sha256 // empty" "$CACHE_FILE")
+
+  # ==================================================
+  # VALIDATE APP
+  # ==================================================
   if [ "$TYPE" = "null" ] || [ -z "$TYPE" ]; then
     echo ""
     echo "Zyphor: ✖ App not found → $APP"
@@ -62,64 +69,73 @@ zyphor_pkg_install() {
   echo "Zyphor: Installing '$APP' (type: $TYPE)"
   echo ""
 
+  # ==================================================
+  # INSTALL HANDLER
+  # ==================================================
   case "$TYPE" in
 
     # --------------------------
-    # APT INSTALL (FLAGS SUPPORT)
+    # APT INSTALL
     # --------------------------
     apt)
-      echo "Zyphor: APT install → $PACKAGE"
-
-      apt update -qq
-      apt install $FLAGS "$PACKAGE"
-      ;;
-
-    # --------------------------
-    # REPO INSTALL
-    # --------------------------
-    repo)
-      echo "Zyphor: Repo install via → $REPO_KEY"
-
-      REPO_KEY_URL=$(jq -r ".repos.\"$REPO_KEY\".key_url" "$CACHE_FILE")
-      REPO_LINE=$(jq -r ".repos.\"$REPO_KEY\".repo_line" "$CACHE_FILE")
-      REPO_FILE=$(jq -r ".repos.\"$REPO_KEY\".source_file" "$CACHE_FILE")
-
-      if [ "$REPO_LINE" = "null" ] || [ -z "$REPO_LINE" ]; then
-        echo "Zyphor: ✖ Repo not found → $REPO_KEY"
+      if [ -z "$PACKAGE" ]; then
+        echo "Zyphor: ✖ Missing package name"
         return 1
       fi
 
-      if [ "$REPO_KEY_URL" != "null" ] && [ -n "$REPO_KEY_URL" ]; then
-        echo "Zyphor: Adding repo key..."
-        wget -q -O - "$REPO_KEY_URL" | apt-key add -
-      fi
-
-      if [ -n "$REPO_FILE" ] && [ "$REPO_FILE" != "null" ]; then
-        echo "Zyphor: Writing repo file → $REPO_FILE"
-        echo "$REPO_LINE" > "$REPO_FILE"
-      fi
-
+      echo "Zyphor: APT install → $PACKAGE"
       apt update -qq
-      apt install $FLAGS "$PACKAGE"
+      apt install -y $FLAGS "$PACKAGE"
       ;;
 
     # --------------------------
     # DEB INSTALL
     # --------------------------
     deb)
-      echo "Zyphor: Downloading .deb → $URL"
+      if [ -z "$URL" ]; then
+        echo "Zyphor: ✖ Missing .deb URL"
+        return 1
+      fi
 
       TMP_DEB="/tmp/zyphor_${APP}.deb"
-      wget -q "$URL" -O "$TMP_DEB"
 
+      echo "Zyphor: Downloading .deb → $URL"
+      if ! wget -q --show-progress "$URL" -O "$TMP_DEB"; then
+        echo "Zyphor: ✖ Failed to download .deb"
+        return 1
+      fi
+
+      # ----- CHECKSUM VALIDATION (OPTIONAL) -----
+      if [ -n "$SHA256" ] && [ "$SHA256" != "null" ]; then
+        echo "Zyphor: Verifying checksum..."
+        DOWNLOADED_HASH=$(sha256sum "$TMP_DEB" | awk '{print $1}')
+
+        if [ "$DOWNLOADED_HASH" != "$SHA256" ]; then
+          echo "Zyphor: ✖ Checksum mismatch!"
+          rm -f "$TMP_DEB"
+          return 1
+        fi
+      fi
+
+      echo "Zyphor: Installing .deb..."
       dpkg -i $FLAGS "$TMP_DEB"
+
+      echo "Zyphor: Fixing dependencies..."
       apt -f install -y
+
+      echo "Zyphor: Cleaning up..."
+      rm -f "$TMP_DEB"
       ;;
 
     # --------------------------
-    # SNAP INSTALL (FLAGS + CHANNEL SUPPORT)
+    # SNAP INSTALL
     # --------------------------
     snap)
+      if [ -z "$PACKAGE" ]; then
+        echo "Zyphor: ✖ Missing snap package"
+        return 1
+      fi
+
       echo "Zyphor: Snap install → $PACKAGE"
 
       if ! command -v snap >/dev/null 2>&1; then
@@ -128,13 +144,12 @@ zyphor_pkg_install() {
         apt install -y snapd
       fi
 
-      # DEFAULT CHANNEL
+      # Default channel
       if [ -z "$CHANNEL" ] || [ "$CHANNEL" = "null" ]; then
         CHANNEL="stable"
       fi
 
       echo "Zyphor: Channel → $CHANNEL"
-
       snap install "$PACKAGE" $FLAGS --channel="$CHANNEL"
       ;;
 
@@ -142,6 +157,11 @@ zyphor_pkg_install() {
     # INTERNAL MODULE
     # --------------------------
     internal)
+      if [ -z "$MODULE" ]; then
+        echo "Zyphor: ✖ Missing module"
+        return 1
+      fi
+
       echo "Zyphor: Running module → $MODULE"
       bash "/usr/lib/zyphor/modules/$MODULE/install.sh"
       ;;

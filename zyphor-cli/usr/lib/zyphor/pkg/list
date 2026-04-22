@@ -1,14 +1,3 @@
-#!/bin/bash
-
-# ==================================================
-# Zyphor pkg list (registry-aware v2)
-# Shows apps installed via Zyphor system
-# Supports: apt | repo | snap | deb | internal
-# ==================================================
-
-CACHE_FILE="/tmp/zyphor_registry.json"
-REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
-
 zyphor_pkg_list() {
 
   echo ""
@@ -37,25 +26,25 @@ zyphor_pkg_list() {
     return 0
   fi
 
+  COUNT=0
+
   # ==================================================
   # CHECK INSTALL STATUS
   # ==================================================
-  COUNT=0
-
   for app in $APPS; do
 
     TYPE=$(jq -r ".apps.\"$app\".type" "$CACHE_FILE")
-    PACKAGE=$(jq -r ".apps.\"$app\".package" "$CACHE_FILE")
+    PACKAGE=$(jq -r ".apps.\"$app\".package // empty" "$CACHE_FILE")
 
     INSTALLED=0
 
     case "$TYPE" in
 
       # --------------------------
-      # APT / REPO
+      # APT (and DEB fallback)
       # --------------------------
-      apt|repo)
-        if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
+      apt|deb)
+        if [ -n "$PACKAGE" ] && dpkg -s "$PACKAGE" >/dev/null 2>&1; then
           INSTALLED=1
         fi
         ;;
@@ -70,19 +59,10 @@ zyphor_pkg_list() {
         ;;
 
       # --------------------------
-      # DEB
-      # --------------------------
-      deb)
-        if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
-          INSTALLED=1
-        fi
-        ;;
-
-      # --------------------------
       # INTERNAL MODULE
       # --------------------------
       internal)
-        if [ -d "/usr/lib/zyphor/modules/$PACKAGE" ]; then
+        if [ -d "/usr/lib/zyphor/modules/$app" ]; then
           INSTALLED=1
         fi
         ;;

@@ -1,18 +1,10 @@
-#!/bin/bash
-
-# ==================================================
-# Zyphor pkg remove (registry-aware v2)
-# Supports: apt | repo | snap | deb | internal
-# ==================================================
-
-REGISTRY_URL="https://markjasonespelita.github.io/zyphor_repo/registry/registry.json"
-CACHE_FILE="/tmp/zyphor_registry.json"
-
 zyphor_pkg_remove() {
 
   APP="$3"
 
-  # ===== Validate input =====
+  # ==================================================
+  # VALIDATE INPUT
+  # ==================================================
   if [ -z "$APP" ]; then
     echo ""
     echo "Zyphor: ✖ Missing app name"
@@ -21,7 +13,9 @@ zyphor_pkg_remove() {
     return 1
   fi
 
-  # ===== Root check =====
+  # ==================================================
+  # ROOT CHECK
+  # ==================================================
   if [ "$EUID" -ne 0 ]; then
     echo ""
     echo "Zyphor: ⚠ Requires root privileges"
@@ -49,10 +43,9 @@ zyphor_pkg_remove() {
   # RESOLVE APP
   # ==================================================
   TYPE=$(jq -r ".apps.\"$APP\".type" "$CACHE_FILE")
-  PACKAGE=$(jq -r ".apps.\"$APP\".package" "$CACHE_FILE")
-  MODULE=$(jq -r ".apps.\"$APP\".module" "$CACHE_FILE")
+  PACKAGE=$(jq -r ".apps.\"$APP\".package // empty" "$CACHE_FILE")
+  MODULE=$(jq -r ".apps.\"$APP\".module // empty" "$CACHE_FILE")
 
-  # ===== Validate app exists =====
   if [ "$TYPE" = "null" ] || [ -z "$TYPE" ]; then
     echo ""
     echo "Zyphor: ✖ App not found → $APP"
@@ -66,11 +59,14 @@ zyphor_pkg_remove() {
   echo "Zyphor: You are about to remove:"
   echo "  App   : $APP"
   echo "  Type  : $TYPE"
-  echo "  Target: $PACKAGE"
+
+  if [ -n "$PACKAGE" ]; then
+    echo "  Target: $PACKAGE"
+  fi
+
   echo ""
 
   read -p "Continue? [y/N]: " CONFIRM
-
   case "$CONFIRM" in
     y|Y) ;;
     *)
@@ -90,10 +86,15 @@ zyphor_pkg_remove() {
   case "$TYPE" in
 
     # --------------------------
-    # APT / REPO
+    # APT + DEB (UNIFIED)
     # --------------------------
-    apt|repo)
-      echo "Zyphor: Removing APT package → $PACKAGE"
+    apt|deb)
+      if [ -z "$PACKAGE" ]; then
+        echo "Zyphor: ✖ Missing package name"
+        return 1
+      fi
+
+      echo "Zyphor: Removing package → $PACKAGE"
 
       if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
         apt remove -y "$PACKAGE"
@@ -106,7 +107,12 @@ zyphor_pkg_remove() {
     # SNAP
     # --------------------------
     snap)
-      echo "Zyphor: Removing Snap package → $PACKAGE"
+      if [ -z "$PACKAGE" ]; then
+        echo "Zyphor: ✖ Missing snap package"
+        return 1
+      fi
+
+      echo "Zyphor: Removing Snap → $PACKAGE"
 
       if snap list 2>/dev/null | awk '{print $1}' | grep -qx "$PACKAGE"; then
         snap remove "$PACKAGE"
@@ -116,22 +122,14 @@ zyphor_pkg_remove() {
       ;;
 
     # --------------------------
-    # DEB
-    # --------------------------
-    deb)
-      echo "Zyphor: Removing DEB package → $PACKAGE"
-
-      if dpkg -s "$PACKAGE" >/dev/null 2>&1; then
-        apt remove -y "$PACKAGE"
-      else
-        echo "Zyphor: ⚠ DEB package not installed → $PACKAGE"
-      fi
-      ;;
-
-    # --------------------------
     # INTERNAL MODULE
     # --------------------------
     internal)
+      if [ -z "$MODULE" ]; then
+        echo "Zyphor: ✖ Missing module"
+        return 1
+      fi
+
       echo "Zyphor: Removing internal module → $MODULE"
       bash "/usr/lib/zyphor/modules/$MODULE/remove.sh"
       ;;
@@ -146,7 +144,7 @@ zyphor_pkg_remove() {
   esac
 
   # ==================================================
-  # CLEANUP OPTION
+  # OPTIONAL CLEANUP
   # ==================================================
   echo ""
   read -p "Zyphor: Run autoremove (cleanup dependencies)? [y/N]: " AUTO

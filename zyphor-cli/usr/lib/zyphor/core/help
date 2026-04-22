@@ -6,7 +6,7 @@ help() {
 
   echo ""
   echo "=================================="
-  echo "          ZYPHOR OS CLI v1.3.4"
+  echo "          ZYPHOR OS CLI v1.4.0"
   echo "=================================="
   echo ""
 
