@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.3...v1.9.0) (2026-04-22)
+
+
+### Features
+
+* added contributing.md ([c604bcb](https://github.com/markjasonespelita/zyphor_packages/commit/c604bcbe9a5702295714929c256e46b9febd533b))
+
 ## [1.8.3](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.2...v1.8.3) (2026-04-22)
 
 
