@@ -6,7 +6,7 @@ help() {
 
   echo ""
   echo "=================================="
-  echo "          ZYPHOR OS CLI v1.4.3"
+  echo "          ZYPHOR OS CLI v1.6.0"
   echo "=================================="
   echo ""
 
@@ -34,6 +34,15 @@ help() {
   printf "  %-30s %s\n" "service stop <name>"    "Stop a service"
   printf "  %-30s %s\n" "service restart <name>" "Restart a service"
   printf "  %-30s %s\n" "service status <name>"  "Show service status"
+  echo ""
+
+  # ================= SMB =================
+  echo "SMB / STORAGE"
+  echo "----------------------------------"
+  printf "  %-30s %s\n" "smb list"        "List SMB shares from a server"
+  printf "  %-30s %s\n" "smb mount"       "Mount SMB shared folder"
+  printf "  %-30s %s\n" "smb disk-list"   "List available disks"
+  printf "  %-30s %s\n" "smb disk-mount"  "Mount local disk (NTFS)"
   echo ""
 
   # ================= DOCTOR =================
@@ -64,6 +73,8 @@ help() {
   echo "  zyphor system upgrade"
   echo "  zyphor pkg install nginx"
   echo "  zyphor service restart ssh"
+  echo "  zyphor smb list"
+  echo "  sudo zyphor smb mount"
   echo "  zyphor doctor scan"
   echo "  zyphor build package zyphor-cli"
   echo "  zyphor build repo"

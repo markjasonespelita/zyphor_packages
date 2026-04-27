@@ -82,6 +82,22 @@ case "$CATEGORY" in
     esac
     ;;
 
+  # ================= SMB =================
+  smb)
+    source /usr/lib/zyphor/smb/list
+    source /usr/lib/zyphor/smb/mount
+    source /usr/lib/zyphor/smb/disk-list
+    source /usr/lib/zyphor/smb/disk-mount
+
+    case "$ACTION" in
+      list)       zyphor_smb_list "$@" ;;
+      mount)      zyphor_smb_mount "$@" ;;
+      disk-list)  zyphor_smb_disk_list "$@" ;;
+      disk-mount) zyphor_smb_disk_mount "$@" ;;
+      *) error "smb $ACTION" ;;
+    esac
+  ;;
+
   # ================= META =================
   version) version ;;
   help|"") help ;;
