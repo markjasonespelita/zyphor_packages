@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.11.0...v1.12.0) (2026-04-27)
+
+
+### Features
+
+* added ftp and ssh support for zyphor cli. ([a6e9a2d](https://github.com/markjasonespelita/zyphor_packages/commit/a6e9a2dbb5778a639b3bdbd03c7911b6f9a12430))
+
 # [1.11.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.10.0...v1.11.0) (2026-04-27)
 
 
