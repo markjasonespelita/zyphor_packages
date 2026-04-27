@@ -129,71 +129,76 @@ zyphor_pkg_install() {
       rm -f "$TMP_DEB"
       ;;
 
-    # --------------------------
-    # SNAP INSTALL (FIXED + BOOTSTRAP SAFE)
-    # --------------------------
-    snap)
+      # --------------------------
+      # SNAP INSTALL (FIXED + BOOTSTRAP SAFE)
+      # --------------------------
+      snap)
 
-      if [ -z "$PACKAGE" ]; then
-        echo "Zyphor: ✖ Missing snap package"
-        return 1
-      fi
+        if [ -z "$PACKAGE" ]; then
+          echo "Zyphor: ✖ Missing snap package"
+          return 1
+        fi
 
-      echo "Zyphor: Snap install → $PACKAGE"
+        echo "Zyphor: Snap install → $PACKAGE"
 
-      # ==================================================
-      # INSTALL SNAPD IF MISSING
-      # ==================================================
-      if ! command -v snap >/dev/null 2>&1; then
-        echo "Zyphor: snapd not found → installing..."
+        # ==================================================
+        # INSTALL SNAPD IF MISSING
+        # ==================================================
+        if ! command -v snap >/dev/null 2>&1; then
+          echo "Zyphor: snapd not found → installing..."
 
-        apt update -qq
-        apt install -y snapd
-      fi
+          apt update -qq
+          apt install -y snapd
+        fi
 
-      # ==================================================
-      # ENSURE SNAP SERVICE IS RUNNING (CRITICAL FIX)
-      # ==================================================
-      echo "Zyphor: Initializing snapd service..."
+        # ==================================================
+        # ENSURE SNAP + SECURITY SERVICES
+        # ==================================================
+        echo "Zyphor: Initializing snapd service..."
 
-      systemctl enable --now snapd >/dev/null 2>&1
-      systemctl enable --now snapd.socket >/dev/null 2>&1
+        systemctl enable --now snapd >/dev/null 2>&1
+        systemctl enable --now snapd.socket >/dev/null 2>&1
 
-      # Wait for daemon readiness (VERY IMPORTANT)
-      echo "Zyphor: Waiting for snapd to be ready..."
-      sleep 3
+        # Enable AppArmor for snap confinement (NEW)
+        systemctl enable --now snapd.apparmor >/dev/null 2>&1
 
-      # ==================================================
-      # DEFAULT CHANNEL
-      # ==================================================
-      if [ -z "$CHANNEL" ] || [ "$CHANNEL" = "null" ]; then
-        CHANNEL="stable"
-      fi
+        # (Optional but strong baseline)
+        systemctl enable --now apparmor >/dev/null 2>&1
 
-      echo "Zyphor: Channel → $CHANNEL"
+        # Wait for daemon readiness (VERY IMPORTANT)
+        echo "Zyphor: Waiting for snapd to be ready..."
+        sleep 3
 
-      # ==================================================
-      # INSTALL SNAP PACKAGE (RETRY SAFE)
-      # ==================================================
-      snap install "$PACKAGE" $FLAGS --channel="$CHANNEL"
-      SNAP_EXIT=$?
+        # ==================================================
+        # DEFAULT CHANNEL
+        # ==================================================
+        if [ -z "$CHANNEL" ] || [ "$CHANNEL" = "null" ]; then
+          CHANNEL="stable"
+        fi
 
-      # ==================================================
-      # RETRY ON FIRST-BOOT FAILURE (common issue)
-      # ==================================================
-      if [ "$SNAP_EXIT" -ne 0 ]; then
-        echo "Zyphor: snap install failed → retrying after refresh..."
+        echo "Zyphor: Channel → $CHANNEL"
 
-        systemctl restart snapd >/dev/null 2>&1
-        sleep 2
-
+        # ==================================================
+        # INSTALL SNAP PACKAGE (RETRY SAFE)
+        # ==================================================
         snap install "$PACKAGE" $FLAGS --channel="$CHANNEL"
         SNAP_EXIT=$?
-      fi
 
-      return $SNAP_EXIT
-      ;;
+        # ==================================================
+        # RETRY ON FIRST-BOOT FAILURE (common issue)
+        # ==================================================
+        if [ "$SNAP_EXIT" -ne 0 ]; then
+          echo "Zyphor: snap install failed → retrying after refresh..."
 
+          systemctl restart snapd >/dev/null 2>&1
+          sleep 2
+
+          snap install "$PACKAGE" $FLAGS --channel="$CHANNEL"
+          SNAP_EXIT=$?
+        fi
+
+        return $SNAP_EXIT
+        ;;
     # --------------------------
     # INTERNAL MODULE
     # --------------------------
