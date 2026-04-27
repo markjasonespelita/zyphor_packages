@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.9.2...v1.10.0) (2026-04-27)
+
+
+### Features
+
+* added smb feature on zyphor-cli. ([0a0c0fb](https://github.com/markjasonespelita/zyphor_packages/commit/0a0c0fb40b689b0e22921f98eef196e4b551604b))
+
 ## [1.9.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.9.1...v1.9.2) (2026-04-27)
 
 
