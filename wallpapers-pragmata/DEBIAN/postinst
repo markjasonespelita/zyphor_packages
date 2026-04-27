@@ -19,4 +19,14 @@ ln -sfn "$SRC_DIR/pragmata-4.jpg" "$TARGET_DIR/pragmata-4"
 
 ln -sfn "$SRC_DIR/pragmata-5.jpg" "$TARGET_DIR/pragmata-5"
 
+ln -sfn "$SRC_DIR/pragmata-6.jpg" "$TARGET_DIR/pragmata-6"
+
+ln -sfn "$SRC_DIR/pragmata-7.jpg" "$TARGET_DIR/pragmata-7"
+
+ln -sfn "$SRC_DIR/pragmata-8.jpg" "$TARGET_DIR/pragmata-8"
+
+ln -sfn "$SRC_DIR/pragmata-9.jpg" "$TARGET_DIR/pragmata-9"
+
+ln -sfn "$SRC_DIR/pragmata-10.jpg" "$TARGET_DIR/pragmata-10"
+
 echo "Zyphor: Wallpapers configured."
