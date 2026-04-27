@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.12.1...v1.13.0) (2026-04-27)
+
+
+### Features
+
+* added zyphor wallpapers nature. ([40e6398](https://github.com/markjasonespelita/zyphor_packages/commit/40e63988eb5768790ca0da6b29a018d77153f553))
+
 ## [1.12.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.12.0...v1.12.1) (2026-04-27)
 
 
