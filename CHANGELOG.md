@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.9.0...v1.9.1) (2026-04-27)
+
+
+### Bug Fixes
+
+* fixed pragmata postinstall and postremove scripts - must adopt new wallpaper images, and making the zyphor cli help command to adopt new zyphor os build version. ([4010a13](https://github.com/markjasonespelita/zyphor_packages/commit/4010a13326f974b901f262f5dd62550b06d1b78b))
+
 # [1.9.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.8.3...v1.9.0) (2026-04-22)
 
 
