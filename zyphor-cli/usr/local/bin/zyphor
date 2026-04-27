@@ -28,15 +28,34 @@ case "$CATEGORY" in
     source /usr/lib/zyphor/pkg/remove
     source /usr/lib/zyphor/pkg/list
     source /usr/lib/zyphor/pkg/search
+    source /usr/lib/zyphor/pkg/cache
 
     case "$ACTION" in
-      install) zyphor_pkg_install "$@" ;;
-      remove)  zyphor_pkg_remove "$@" ;;
-      list)    zyphor_pkg_list "$@" ;;
-      search)  zyphor_pkg_search "$@" ;;
-      *) error "pkg $ACTION" ;;
+      install)
+        zyphor_pkg_cache
+        zyphor_pkg_install "$@"
+      ;;
+
+      remove)
+        zyphor_pkg_cache
+        zyphor_pkg_remove "$@"
+      ;;
+
+      list)
+        zyphor_pkg_cache
+        zyphor_pkg_list "$@"
+      ;;
+
+      search)
+        zyphor_pkg_cache
+        zyphor_pkg_search "$@"
+      ;;
+
+      *)
+        error "pkg $ACTION"
+      ;;
     esac
-    ;;
+  ;;
 
   # ================= SERVICE =================
   service)
