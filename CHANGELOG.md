@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.9.1...v1.9.2) (2026-04-27)
+
+
+### Bug Fixes
+
+* changed the zyphor cli version to adopt changes in the build version ([7987ee2](https://github.com/markjasonespelita/zyphor_packages/commit/7987ee2727a33e97b6a627dbc7dd0d13bf14dac3))
+
 ## [1.9.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.9.0...v1.9.1) (2026-04-27)
 
 
