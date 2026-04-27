@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/markjasonespelita/zyphor_packages/compare/v1.13.2...v1.13.3) (2026-04-27)
+
+
+### Bug Fixes
+
+* removed /usr/share/.gitignore in pragmata and nature bacngrounds. ([b946d90](https://github.com/markjasonespelita/zyphor_packages/commit/b946d9067f7f3f79ab120e3f463b72d45c1e665c))
+
 ## [1.13.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.13.1...v1.13.2) (2026-04-27)
 
 
