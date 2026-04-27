@@ -117,6 +117,32 @@ case "$CATEGORY" in
     esac
   ;;
 
+  # ================= FTP =================
+  ftp)
+    source /usr/lib/zyphor/ftp/list
+    source /usr/lib/zyphor/ftp/upload
+    source /usr/lib/zyphor/ftp/download
+
+    case "$ACTION" in
+      list)     zyphor_ftp_list "$@" ;;
+      upload)   zyphor_ftp_upload "$@" ;;
+      download) zyphor_ftp_download "$@" ;;
+      *) error "ftp $ACTION" ;;
+    esac
+  ;;
+
+  # ================= SSH =================
+  ssh)
+    source /usr/lib/zyphor/ssh/connect
+    source /usr/lib/zyphor/ssh/cmd
+
+    case "$ACTION" in
+      connect) zyphor_ssh_connect "$@" ;;
+      cmd)     zyphor_ssh_cmd "$@" ;;
+      *) error "ssh $ACTION" ;;
+    esac
+  ;;
+
   # ================= META =================
   version) version ;;
   help|"") help ;;
