@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.13.1...v1.13.2) (2026-04-27)
+
+
+### Bug Fixes
+
+* removed .gitignore on wallpapers pragmata. ([e0c1f14](https://github.com/markjasonespelita/zyphor_packages/commit/e0c1f14f19e68a9ff043fe4851907406cb2aab42))
+
 ## [1.13.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.13.0...v1.13.1) (2026-04-27)
 
 
