@@ -6,7 +6,7 @@ help() {
 
   echo ""
   echo "=================================="
-  echo "          ZYPHOR OS CLI v1.9.0"
+  echo "          ZYPHOR OS CLI v1.10.0"
   echo "=================================="
   echo ""
 
@@ -15,6 +15,15 @@ help() {
   echo "----------------------------------"
   printf "  %-30s %s\n" "system upgrade" "Upgrade all system packages"
   printf "  %-30s %s\n" "system clean"   "Clean system cache & unused packages"
+  echo ""
+
+   # ================= SETUP =================
+  echo "SETUP"
+  echo "----------------------------------"
+  printf "  %-30s %s\n" "setup dev <target>" "Setup development environment"
+  printf "  %-30s %s\n" "setup dev laravel" "Laravel (PHP, Composer, Node.js)"
+  printf "  %-30s %s\n" "setup dev node"    "Install Node.js 20"
+  printf "  %-30s %s\n" "setup dev composer" "Install Composer"
   echo ""
 
   # ================= PACKAGE =================
@@ -95,6 +104,8 @@ help() {
   echo "  zyphor doctor scan"
   echo "  zyphor build package zyphor-cli"
   echo "  zyphor build repo"
+  echo "  sudo zyphor setup dev laravel"
+  echo "  sudo zyphor setup dev node"
   echo ""
 
   echo "=================================="

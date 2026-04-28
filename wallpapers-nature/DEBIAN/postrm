@@ -26,6 +26,26 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
 
   rm -f /usr/share/images/desktop-base/nature-10
 
+  rm -f /usr/share/backgrounds/nature-1
+
+  rm -f /usr/share/backgrounds/nature-2
+
+  rm -f /usr/share/backgrounds/nature-3
+
+  rm -f /usr/share/backgrounds/nature-4
+
+  rm -f /usr/share/backgrounds/nature-5
+  
+  rm -f /usr/share/backgrounds/nature-6
+
+  rm -f /usr/share/backgrounds/nature-7
+
+  rm -f /usr/share/backgrounds/nature-8
+
+  rm -f /usr/share/backgrounds/nature-9
+
+  rm -f /usr/share/backgrounds/nature-10
+
   # removing raw files
 
   rm -f /usr/share/backgrounds/wallpapers-nature/nature-1.jpg

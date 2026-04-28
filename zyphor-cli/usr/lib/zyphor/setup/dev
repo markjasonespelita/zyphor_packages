@@ -1,0 +1,142 @@
+#!/bin/bash
+
+zyphor_setup_dev() {
+
+  TARGET="$3"
+
+  # ==================================================
+  # VALIDATE INPUT
+  # ==================================================
+  if [ -z "$TARGET" ]; then
+    echo ""
+    echo "Zyphor: ✖ Missing dev target"
+    echo "Usage: zyphor setup dev <target>"
+    echo "Example: zyphor setup dev laravel"
+    echo ""
+    return 1
+  fi
+
+  # ==================================================
+  # ROOT CHECK
+  # ==================================================
+  if [ "$EUID" -ne 0 ]; then
+    echo ""
+    echo "Zyphor: ⚠ Requires root privileges"
+    echo "Try: sudo zyphor setup dev $TARGET"
+    echo ""
+    return 1
+  fi
+
+  echo ""
+  echo "Zyphor: 🚀 Setting up dev environment → $TARGET"
+  echo ""
+
+  # ==================================================
+  # TARGET HANDLER
+  # ==================================================
+  case "$TARGET" in
+
+    # --------------------------
+    # LARAVEL DEV SETUP
+    # --------------------------
+    laravel)
+
+      # --------------------------
+      # CHECK PHP
+      # --------------------------
+      if ! command -v php >/dev/null 2>&1; then
+        echo "Zyphor: Installing PHP..."
+        apt update -qq
+        apt install -y php php-cli php-mbstring unzip curl
+      fi
+
+      # --------------------------
+      # INSTALL COMPOSER
+      # --------------------------
+      echo "Zyphor: Installing Composer..."
+
+      php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+
+      php composer-setup.php
+
+      mv composer.phar /usr/local/bin/composer
+
+      rm -f composer-setup.php
+
+      echo "Zyphor: ✔ Composer installed"
+
+      # --------------------------
+      # REMOVE OLD NODEJS
+      # --------------------------
+      echo "Zyphor: Removing old Node.js..."
+      apt remove nodejs -y || true
+
+      # --------------------------
+      # INSTALL NODE 20
+      # --------------------------
+      echo "Zyphor: Installing Node.js 20..."
+
+      curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+
+      apt install -y nodejs
+
+      echo "Zyphor: ✔ Node.js installed"
+
+      # --------------------------
+      # VERIFY
+      # --------------------------
+      echo ""
+      echo "Zyphor: Verifying environment..."
+
+      php -v || echo "⚠ PHP missing"
+      composer -V || echo "⚠ Composer missing"
+      node -v || echo "⚠ Node missing"
+      npm -v || echo "⚠ NPM missing"
+
+      ;;
+
+    # --------------------------
+    # FUTURE TARGETS
+    # --------------------------
+    node)
+      echo "Zyphor: Installing Node.js only..."
+
+      apt remove nodejs -y || true
+      curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      apt install -y nodejs
+      ;;
+
+    composer)
+      echo "Zyphor: Installing Composer only..."
+
+      php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+      php composer-setup.php
+      mv composer.phar /usr/local/bin/composer
+      rm -f composer-setup.php
+      ;;
+
+    # --------------------------
+    # UNKNOWN TARGET
+    # --------------------------
+    *)
+      echo ""
+      echo "Zyphor: ✖ Unknown dev target → $TARGET"
+      echo ""
+      return 1
+      ;;
+  esac
+
+  # ==================================================
+  # RESULT
+  # ==================================================
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo "Zyphor: ✔ Dev setup '$TARGET' completed"
+    echo ""
+  else
+    echo ""
+    echo "Zyphor: ✖ Dev setup failed → $TARGET"
+    echo ""
+    return 1
+  fi
+}

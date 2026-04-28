@@ -143,6 +143,20 @@ case "$CATEGORY" in
     esac
   ;;
 
+  # ================= SETUP =================
+  setup)
+    source /usr/lib/zyphor/setup/dev
+
+    case "$ACTION" in
+      dev)
+        zyphor_setup_dev "$@"
+      ;;
+      *)
+        error "setup $ACTION"
+      ;;
+    esac
+  ;;
+
   # ================= META =================
   version) version ;;
   help|"") help ;;

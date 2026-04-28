@@ -26,6 +26,26 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
 
   rm -f /usr/share/images/desktop-base/pragmata-10
 
+  rm -f /usr/share/backgrounds/pragmata-1
+
+  rm -f /usr/share/backgrounds/pragmata-2
+
+  rm -f /usr/share/backgrounds/pragmata-3
+
+  rm -f /usr/share/backgrounds/pragmata-4
+
+  rm -f /usr/share/backgrounds/pragmata-5
+  
+  rm -f /usr/share/backgrounds/pragmata-6
+
+  rm -f /usr/share/backgrounds/pragmata-7
+
+  rm -f /usr/share/backgrounds/pragmata-8
+
+  rm -f /usr/share/backgrounds/pragmata-9
+
+  rm -f /usr/share/backgrounds/pragmata-10
+
   # removing raw files
 
   rm -f /usr/share/backgrounds/wallpapers-pragmata/pragmata-1.jpg
