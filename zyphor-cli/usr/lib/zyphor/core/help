@@ -6,7 +6,7 @@ help() {
 
   echo ""
   echo "=================================="
-  echo "          ZYPHOR OS CLI v1.10.0"
+  echo "          ZYPHOR OS CLI v1.11.0"
   echo "=================================="
   echo ""
 
@@ -15,6 +15,7 @@ help() {
   echo "----------------------------------"
   printf "  %-30s %s\n" "system upgrade" "Upgrade all system packages"
   printf "  %-30s %s\n" "system clean"   "Clean system cache & unused packages"
+  printf "  %-30s %s\n" "system info"   "System information"
   echo ""
 
    # ================= SETUP =================

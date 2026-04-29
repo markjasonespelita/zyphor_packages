@@ -93,10 +93,12 @@ case "$CATEGORY" in
   system)
     source /usr/lib/zyphor/system/upgrade
     source /usr/lib/zyphor/system/clean
+    source /usr/lib/zyphor/system/info
 
     case "$ACTION" in
       upgrade) zyphor_system_upgrade ;;
       clean)   zyphor_system_clean ;;
+      info)    zyphor_system_info ;;
       *) error "system $ACTION" ;;
     esac
     ;;
