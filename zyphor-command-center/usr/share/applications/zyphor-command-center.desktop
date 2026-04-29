@@ -2,7 +2,7 @@
 Name=Zyphor Command Center
 Comment=Manage Zyphor OS
 Exec=zyphor-command-center
-Icon=utilities-terminal
+Icon=/usr/share/zyphor-command-center/styles/icons/zyphor.png
 Terminal=false
 Type=Application
 Categories=System;
