@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.14.0...v1.15.0) (2026-04-29)
+
+
+### Features
+
+* added zyphor command center package - a gui form of managing system, doctor, and packages in zyphor os cli. ([9795911](https://github.com/markjasonespelita/zyphor_packages/commit/97959111d1edb4c57f54bb6675eea92884165dd4))
+
 # [1.14.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.13.3...v1.14.0) (2026-04-28)
 
 
