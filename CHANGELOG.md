@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.15.1...v1.16.0) (2026-04-29)
+
+
+### Features
+
+* added loading indicator in zyphor command center when process is ongoing. ([01f42a7](https://github.com/markjasonespelita/zyphor_packages/commit/01f42a7867818cf67eec1da963ae1408f7db2afe))
+
 ## [1.15.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.15.0...v1.15.1) (2026-04-29)
 
 
