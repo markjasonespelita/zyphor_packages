@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.17.0...v1.18.0) (2026-04-29)
+
+
+### Features
+
+* added application logo on the zyphor-command-center. ([c8afbb4](https://github.com/markjasonespelita/zyphor_packages/commit/c8afbb4f58fda632eddd7a34bd419b42666512f6))
+
 # [1.17.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.16.0...v1.17.0) (2026-04-29)
 
 
