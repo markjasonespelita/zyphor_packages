@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.15.0...v1.15.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* readded zyphor-command-center - cache problem ([fa32bfc](https://github.com/markjasonespelita/zyphor_packages/commit/fa32bfceedd960b6bb66b7de75e44eed78329ec5))
+
 # [1.15.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.14.0...v1.15.0) (2026-04-29)
 
 
