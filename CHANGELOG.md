@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.16.0...v1.17.0) (2026-04-29)
+
+
+### Features
+
+* integrate zyphor system info on the command route. ([a31880b](https://github.com/markjasonespelita/zyphor_packages/commit/a31880bee6a5eb4129b6aca02b43cf2346e17561))
+
 # [1.16.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.15.1...v1.16.0) (2026-04-29)
 
 
