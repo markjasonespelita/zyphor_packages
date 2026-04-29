@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton
-from PyQt6.QtCore import QProcess
+from core.process import ProcessManager
+from ui.components.loading import LoadingIndicator
 
 
 class PkgListPage(QWidget):
@@ -16,21 +17,30 @@ class PkgListPage(QWidget):
         self.console.setReadOnly(True)
 
         # =========================
+        # LOADING
+        # =========================
+        self.loading = LoadingIndicator("Loading packages...")
+
+        # =========================
+        # PROCESS MANAGER
+        # =========================
+        self.process = ProcessManager(self.console.append)
+
+        # 🔥 auto loading binding
+        self.process.started.connect(self.loading.start)
+        self.process.finished.connect(self.loading.stop)
+
+        # =========================
         # BUTTON
         # =========================
         self.btn = QPushButton("Refresh Package List")
         self.btn.clicked.connect(self.run_list)
 
-        # =========================
-        # PROCESS
-        # =========================
-        self.process = QProcess()
-        self.process.readyReadStandardOutput.connect(self.read_output)
-        self.process.readyReadStandardError.connect(self.read_output)
-
         layout.addWidget(self.btn)
+        layout.addWidget(self.loading)
         layout.addWidget(self.console)
 
+        # auto load on start
         self.run_list()
 
     # =========================
@@ -38,16 +48,4 @@ class PkgListPage(QWidget):
     # =========================
     def run_list(self):
         self.console.clear()
-        self.process.start("bash", ["-c", "zyphor pkg list"])
-
-    # =========================
-    # OUTPUT HANDLER
-    # =========================
-    def read_output(self):
-        data = self.process.readAllStandardOutput().data().decode()
-        err = self.process.readAllStandardError().data().decode()
-
-        if data:
-            self.console.append(data)
-        if err:
-            self.console.append(err)
+        self.process.run("zyphor pkg list")

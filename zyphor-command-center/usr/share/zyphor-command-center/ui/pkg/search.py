@@ -2,7 +2,8 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QTextEdit,
     QPushButton, QLineEdit
 )
-from PyQt6.QtCore import QProcess
+from core.process import ProcessManager
+from ui.components.loading import LoadingIndicator
 
 
 class PkgSearchPage(QWidget):
@@ -13,7 +14,7 @@ class PkgSearchPage(QWidget):
         self.setLayout(layout)
 
         # =========================
-        # INPUT FIELD
+        # INPUT
         # =========================
         self.input = QLineEdit()
         self.input.setPlaceholderText("Search packages (e.g. firefox, snap, editor)")
@@ -31,14 +32,25 @@ class PkgSearchPage(QWidget):
         self.console.setReadOnly(True)
 
         # =========================
-        # PROCESS
+        # LOADING
         # =========================
-        self.process = QProcess()
-        self.process.readyReadStandardOutput.connect(self.read_output)
-        self.process.readyReadStandardError.connect(self.read_output)
+        self.loading = LoadingIndicator("Searching packages...")
 
+        # =========================
+        # PROCESS MANAGER
+        # =========================
+        self.process = ProcessManager(self.console.append)
+
+        # 🔥 auto loading binding
+        self.process.started.connect(self.loading.start)
+        self.process.finished.connect(self.loading.stop)
+
+        # =========================
+        # LAYOUT
+        # =========================
         layout.addWidget(self.input)
         layout.addWidget(self.btn)
+        layout.addWidget(self.loading)
         layout.addWidget(self.console)
 
     # =========================
@@ -52,19 +64,4 @@ class PkgSearchPage(QWidget):
             return
 
         self.console.clear()
-        self.process.start(
-            "bash",
-            ["-c", f"zyphor pkg search {keyword}"]
-        )
-
-    # =========================
-    # OUTPUT HANDLER
-    # =========================
-    def read_output(self):
-        data = self.process.readAllStandardOutput().data().decode()
-        err = self.process.readAllStandardError().data().decode()
-
-        if data:
-            self.console.append(data)
-        if err:
-            self.console.append(err)
+        self.process.run(f"zyphor pkg search {keyword}")

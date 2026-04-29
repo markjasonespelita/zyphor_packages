@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton
-from PyQt6.QtCore import QProcess
+from core.process import ProcessManager
+from ui.components.loading import LoadingIndicator
 
 
 class DoctorReportPage(QWidget):
@@ -9,35 +10,57 @@ class DoctorReportPage(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
+        # =========================
+        # CONSOLE OUTPUT
+        # =========================
         self.console = QTextEdit()
         self.console.setReadOnly(True)
 
+        # =========================
+        # LOADING
+        # =========================
+        self.loading = LoadingIndicator("Generating system report...")
+
+        # =========================
+        # PROCESS MANAGER
+        # =========================
+        self.process = ProcessManager(self.console.append)
+
+        # 🔥 auto loading binding
+        self.process.started.connect(self.loading.start)
+        self.process.finished.connect(self.on_finished)
+
+        # =========================
+        # BUTTON
+        # =========================
         self.btn = QPushButton("Generate System Report")
         self.btn.clicked.connect(self.run_report)
 
-        self.process = QProcess()
-        self.process.readyReadStandardOutput.connect(self.read_output)
-        self.process.readyReadStandardError.connect(self.read_output)
-        self.process.finished.connect(self.load_report_file)
-
+        # =========================
+        # LAYOUT
+        # =========================
         layout.addWidget(self.btn)
+        layout.addWidget(self.loading)
         layout.addWidget(self.console)
 
+    # =========================
+    # RUN REPORT
+    # =========================
     def run_report(self):
         self.console.clear()
-        self.process.start("bash", ["-c", "pkexec zyphor doctor report"])
+        self.process.run("pkexec zyphor doctor report")
 
-    def read_output(self):
-        data = self.process.readAllStandardOutput().data().decode()
-        err = self.process.readAllStandardError().data().decode()
+    # =========================
+    # AFTER PROCESS FINISH
+    # =========================
+    def on_finished(self):
+        self.loading.stop()
+        self.load_report_file()
 
-        if data:
-            self.console.append(data)
-        if err:
-            self.console.append(err)
-
+    # =========================
+    # LOAD SAVED FILE
+    # =========================
     def load_report_file(self):
-        # Automatically display saved report
         try:
             with open("/tmp/zyphor_doctor_report.txt", "r") as f:
                 content = f.read()

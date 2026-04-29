@@ -2,7 +2,8 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QTextEdit,
     QPushButton, QLineEdit, QMessageBox
 )
-from PyQt6.QtCore import QProcess
+from core.process import ProcessManager
+from ui.components.loading import LoadingIndicator
 
 
 class PkgRemovePage(QWidget):
@@ -25,24 +26,35 @@ class PkgRemovePage(QWidget):
         self.btn.clicked.connect(self.confirm_remove)
 
         # =========================
-        # CONSOLE OUTPUT
+        # CONSOLE
         # =========================
         self.console = QTextEdit()
         self.console.setReadOnly(True)
 
         # =========================
-        # PROCESS
+        # LOADING
         # =========================
-        self.process = QProcess()
-        self.process.readyReadStandardOutput.connect(self.read_output)
-        self.process.readyReadStandardError.connect(self.read_output)
+        self.loading = LoadingIndicator("Removing package...")
 
+        # =========================
+        # PROCESS MANAGER
+        # =========================
+        self.process = ProcessManager(self.console.append)
+
+        # 🔥 auto binding
+        self.process.started.connect(self.loading.start)
+        self.process.finished.connect(self.loading.stop)
+
+        # =========================
+        # LAYOUT
+        # =========================
         layout.addWidget(self.input)
         layout.addWidget(self.btn)
+        layout.addWidget(self.loading)
         layout.addWidget(self.console)
 
     # =========================
-    # CONFIRM (GUI REPLACES CLI PROMPT FLOW)
+    # CONFIRM (GUI REPLACES CLI PROMPT)
     # =========================
     def confirm_remove(self):
         app = self.input.text().strip()
@@ -62,25 +74,13 @@ class PkgRemovePage(QWidget):
             self.run_remove(app)
 
     # =========================
-    # RUN COMMAND (SAFE FOR read -p BLOCKING)
+    # RUN REMOVE
     # =========================
     def run_remove(self, app):
         self.console.clear()
 
         # IMPORTANT:
-        # We simulate terminal input "y" to satisfy read -p if it appears
+        # We bypass CLI prompt using forced input
         cmd = f"printf 'y\\n' | pkexec zyphor pkg remove {app}"
 
-        self.process.start("bash", ["-c", cmd])
-
-    # =========================
-    # OUTPUT HANDLER
-    # =========================
-    def read_output(self):
-        data = self.process.readAllStandardOutput().data().decode()
-        err = self.process.readAllStandardError().data().decode()
-
-        if data:
-            self.console.append(data)
-        if err:
-            self.console.append(err)
+        self.process.run(cmd)

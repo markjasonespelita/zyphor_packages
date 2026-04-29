@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton, QLineEdit
-from PyQt6.QtCore import QProcess
+from core.process import ProcessManager
+from ui.components.loading import LoadingIndicator
 
 
 class PkgInstallPage(QWidget):
@@ -10,7 +11,7 @@ class PkgInstallPage(QWidget):
         self.setLayout(layout)
 
         # =========================
-        # INPUT FIELD (APP NAME)
+        # INPUT
         # =========================
         self.input = QLineEdit()
         self.input.setPlaceholderText("Enter app name (e.g. firefox, vscode)")
@@ -22,20 +23,31 @@ class PkgInstallPage(QWidget):
         self.btn.clicked.connect(self.run_install)
 
         # =========================
-        # CONSOLE OUTPUT
+        # CONSOLE
         # =========================
         self.console = QTextEdit()
         self.console.setReadOnly(True)
 
         # =========================
-        # PROCESS
+        # LOADING
         # =========================
-        self.process = QProcess()
-        self.process.readyReadStandardOutput.connect(self.read_output)
-        self.process.readyReadStandardError.connect(self.read_output)
+        self.loading = LoadingIndicator("Installing...")
 
+        # =========================
+        # PROCESS MANAGER (ONLY ONCE)
+        # =========================
+        self.process = ProcessManager(self.console.append)
+
+        # 🔥 auto binding
+        self.process.started.connect(self.loading.start)
+        self.process.finished.connect(self.loading.stop)
+
+        # =========================
+        # LAYOUT
+        # =========================
         layout.addWidget(self.input)
         layout.addWidget(self.btn)
+        layout.addWidget(self.loading)
         layout.addWidget(self.console)
 
     # =========================
@@ -50,19 +62,4 @@ class PkgInstallPage(QWidget):
 
         self.console.clear()
 
-        self.process.start(
-            "bash",
-            ["-c", f"pkexec zyphor pkg install {app}"]
-        )
-
-    # =========================
-    # OUTPUT HANDLER
-    # =========================
-    def read_output(self):
-        data = self.process.readAllStandardOutput().data().decode()
-        err = self.process.readAllStandardError().data().decode()
-
-        if data:
-            self.console.append(data)
-        if err:
-            self.console.append(err)
+        self.process.run(f"pkexec zyphor pkg install {app}")
