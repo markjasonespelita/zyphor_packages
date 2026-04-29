@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.18.0...v1.19.0) (2026-04-29)
+
+
+### Features
+
+* remvoved policykit-1 as dependecy on the zyphor-command-center. ([9861e99](https://github.com/markjasonespelita/zyphor_packages/commit/9861e99c805109d8693e6bbb649abe7d8f9d03c4))
+
 # [1.18.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.17.0...v1.18.0) (2026-04-29)
 
 
