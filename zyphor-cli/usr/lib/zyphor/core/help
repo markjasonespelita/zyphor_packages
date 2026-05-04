@@ -89,7 +89,6 @@ help() {
   echo "CORE"
   echo "----------------------------------"
   printf "  %-30s %s\n" "help"    "Show this help menu"
-  printf "  %-30s %s\n" "version" "Show Zyphor OS version"
   echo ""
 
   # ================= EXAMPLES =================

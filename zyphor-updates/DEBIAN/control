@@ -1,8 +1,8 @@
 Package: zyphor-updates
-Version: 0.0.1
+Version: 1.0.0
 Section: utils
 Priority: optional
 Architecture: all
-Depends: bash
+Depends: fastfetch-config-1.0.0 (>= 1.0)
 Maintainer: Mark Jason P. Espelita
 Description: Zyphor OS Updates

@@ -2,7 +2,6 @@
 
 # ================= CORE =================
 source /usr/lib/zyphor/core/help
-source /usr/lib/zyphor/core/version
 source /usr/lib/zyphor/core/error
 
 CATEGORY="$1"
@@ -160,7 +159,6 @@ case "$CATEGORY" in
   ;;
 
   # ================= META =================
-  version) version ;;
   help|"") help ;;
   *) error "$CATEGORY" ;;
 

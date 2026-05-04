@@ -1,8 +1,8 @@
-Package: zyphor-cli
-Version: 1.12.0
+Package: fastfetch-config-1.0.0
+Version: 1.0.0
 Section: utils
 Priority: optional
 Architecture: all
 Depends: bash
 Maintainer: Mark Jason P. Espelita
-Description: Zyphor OS CLI abstraction layer
+Description: Zyphor OS Fastfetch Config
