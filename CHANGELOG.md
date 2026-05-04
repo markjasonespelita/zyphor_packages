@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.21.0...v1.21.1) (2026-05-04)
+
+
+### Bug Fixes
+
+* fastfetch config added postinst ([f71f9de](https://github.com/markjasonespelita/zyphor_packages/commit/f71f9de2ed915f7b0fb90b384be7700bb54f090a))
+
 # [1.21.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.20.0...v1.21.0) (2026-05-04)
 
 
