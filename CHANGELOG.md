@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.21.3...v1.22.0) (2026-05-04)
+
+
+### Features
+
+* changed zyphor grub screensaver. ([6add2cb](https://github.com/markjasonespelita/zyphor_packages/commit/6add2cb26de00b53663a119cfd8c7b22d48f9e46))
+
 ## [1.21.3](https://github.com/markjasonespelita/zyphor_packages/compare/v1.21.2...v1.21.3) (2026-05-04)
 
 
