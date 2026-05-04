@@ -3,6 +3,6 @@ Version: 1.0.2
 Section: utils
 Priority: optional
 Architecture: all
-Depends: fastfetch-config-1
+Depends: fastfetch-config-1, zyphor-cli, zyphor-command-center, zyphor-wallpapers-nature
 Maintainer: Mark Jason P. Espelita
 Description: Zyphor OS Updates
