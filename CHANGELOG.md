@@ -1,3 +1,10 @@
+## [1.21.3](https://github.com/markjasonespelita/zyphor_packages/compare/v1.21.2...v1.21.3) (2026-05-04)
+
+
+### Bug Fixes
+
+* fixed zyphor-updates dependencies ([74bd622](https://github.com/markjasonespelita/zyphor_packages/commit/74bd622eda04dd30b1c35c217615d944d0de2555))
+
 ## [1.21.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.21.1...v1.21.2) (2026-05-04)
 
 
