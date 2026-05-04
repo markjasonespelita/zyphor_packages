@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.19.0...v1.20.0) (2026-05-04)
+
+
+### Features
+
+* added zyphor-updates ([7e95af0](https://github.com/markjasonespelita/zyphor_packages/commit/7e95af06d5e83888f62f0c05199141178652ed25))
+
 # [1.19.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.18.0...v1.19.0) (2026-04-29)
 
 
