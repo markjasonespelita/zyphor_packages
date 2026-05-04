@@ -1,5 +1,5 @@
-Package: fastfetch-config-1.0.0
-Version: 1.0.0
+Package: fastfetch-config-1.0.1
+Version: 1.0.1
 Section: utils
 Priority: optional
 Architecture: all
