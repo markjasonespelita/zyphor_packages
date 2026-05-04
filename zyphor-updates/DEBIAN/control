@@ -1,0 +1,8 @@
+Package: zyphor-updates
+Version: 0.0.1
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash
+Maintainer: Mark Jason P. Espelita
+Description: Zyphor OS Updates
