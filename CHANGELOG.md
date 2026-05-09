@@ -1,3 +1,10 @@
+## [1.22.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.22.0...v1.22.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* fixed file orgaganization. ([01a4c2c](https://github.com/markjasonespelita/zyphor_packages/commit/01a4c2c8d832229bafe2fabe7390c0701592df78))
+
 # [1.22.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.21.3...v1.22.0) (2026-05-04)
 
 
