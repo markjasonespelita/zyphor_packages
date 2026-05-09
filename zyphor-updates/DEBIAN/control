@@ -1,8 +1,9 @@
 Package: zyphor-updates
-Version: 1.1.0
+Version: 1.1.1
 Section: utils
 Priority: optional
 Architecture: all
-Depends: fastfetch-config-1, grub-screensaver-1, zyphor-cli, zyphor-command-center, zyphor-wallpapers-nature
+Depends: fastfetch-config-1,
+ grub-screensaver-1
 Maintainer: Mark Jason P. Espelita
 Description: Zyphor OS Updates
