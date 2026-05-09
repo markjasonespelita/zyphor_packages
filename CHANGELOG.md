@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.23.0...v1.24.0) (2026-05-09)
+
+
+### Features
+
+* added a new setup dev git command. ([627b91a](https://github.com/markjasonespelita/zyphor_packages/commit/627b91a7ea8a08ce588d77db7877d92143c173ce))
+
 # [1.23.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.22.1...v1.23.0) (2026-05-09)
 
 
