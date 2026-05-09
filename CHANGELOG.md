@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.24.0...v1.24.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* fixed zyphor cli terminal versioning. ([fe1b854](https://github.com/markjasonespelita/zyphor_packages/commit/fe1b85487ef400dacd9290772db96ef95398a193))
+
 # [1.24.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.23.0...v1.24.0) (2026-05-09)
 
 
