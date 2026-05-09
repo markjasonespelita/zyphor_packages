@@ -11,7 +11,7 @@ zyphor_setup_dev() {
     echo ""
     echo "Zyphor: ✖ Missing dev target"
     echo "Usage: zyphor setup dev <target>"
-    echo "Example: zyphor setup dev laravel"
+    echo "Example: zyphor setup dev php"
     echo ""
     return 1
   fi
@@ -37,9 +37,9 @@ zyphor_setup_dev() {
   case "$TARGET" in
 
     # --------------------------
-    # LARAVEL DEV SETUP
+    # PHP DEV SETUP
     # --------------------------
-    laravel)
+    php)
 
       # --------------------------
       # CHECK PHP
