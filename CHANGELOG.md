@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.24.1...v1.25.0) (2026-05-10)
+
+
+### Features
+
+* added zyphor-display-mac-v1 ([1473020](https://github.com/markjasonespelita/zyphor_packages/commit/14730206f5582a63e5ad0477e13adf7ef6dea065))
+
 ## [1.24.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.24.0...v1.24.1) (2026-05-09)
 
 
