@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+
+    # Remove dconf overrides
+    rm -f /etc/dconf/db/local.d/00-compiz-Default
+    rm -f /etc/dconf/db/local.d/00-compiz-unity
+    rm -f /etc/dconf/profile/user
+    dconf update
+
+    # Switch back to xfwm4 as the logged-in user
+    REAL_USER=$(logname 2>/dev/null || echo "$SUDO_USER")
+    if [ -n "$REAL_USER" ]; then
+        XAUTHORITY=$(eval echo "~$REAL_USER/.Xauthority")
+        sudo -u "$REAL_USER" \
+            DISPLAY=":0" \
+            XAUTHORITY="$XAUTHORITY" \
+            xfwm4 --replace >/dev/null 2>&1 &
+    fi
+
+fi
+
+exit 0

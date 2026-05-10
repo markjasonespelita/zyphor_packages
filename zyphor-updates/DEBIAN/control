@@ -1,9 +1,10 @@
 Package: zyphor-updates
-Version: 1.1.1
+Version: 1.2.0
 Section: utils
 Priority: optional
 Architecture: all
 Depends: fastfetch-config-1,
- grub-screensaver-1
+ grub-screensaver-1,
+ zyphor-display-mac-v1
 Maintainer: Mark Jason P. Espelita
 Description: Zyphor OS Updates

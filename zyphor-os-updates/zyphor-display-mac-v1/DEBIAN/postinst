@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+# Write dconf profile
+mkdir -p /etc/dconf/profile
+cat > /etc/dconf/profile/user <<'EOF'
+user-db:user
+system-db:local
+EOF
+
+# Write compiz plugin defaults
+mkdir -p /etc/dconf/db/local.d
+for profile in Default unity; do
+    cat > /etc/dconf/db/local.d/00-compiz-${profile} <<EOF
+[org/compiz/profiles/${profile}/plugins/core]
+active-plugins=['core','composite','opengl','decor','move','resize','place','animation','wobblywindows','fade','magiclamp']
+EOF
+done
+
+# Compile dconf database
+dconf update
+
+# Start compiz as the logged-in user (not root)
+REAL_USER=$(logname 2>/dev/null || echo "$SUDO_USER")
+if [ -n "$REAL_USER" ]; then
+    XAUTHORITY=$(eval echo "~$REAL_USER/.Xauthority")
+    sudo -u "$REAL_USER" \
+        DISPLAY=":0" \
+        XAUTHORITY="$XAUTHORITY" \
+        compiz --replace >/dev/null 2>&1 &
+fi
+
+exit 0
