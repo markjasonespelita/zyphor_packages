@@ -1,29 +1,36 @@
 #!/bin/bash
 set -e
 
-# Write dconf profile
-mkdir -p /etc/dconf/profile
-cat > /etc/dconf/profile/user <<'EOF'
-user-db:user
-system-db:local
-EOF
-
-# Write compiz plugin defaults
-mkdir -p /etc/dconf/db/local.d
-for profile in Default unity; do
-    cat > /etc/dconf/db/local.d/00-compiz-${profile} <<EOF
-[org/compiz/profiles/${profile}/plugins/core]
-active-plugins=['core','composite','opengl','decor','move','resize','place','animation','wobblywindows','fade','magiclamp']
-EOF
-done
-
-# Compile dconf database
-dconf update
-
-# Start compiz as the logged-in user (not root)
 REAL_USER=$(logname 2>/dev/null || echo "$SUDO_USER")
+REAL_HOME=$(eval echo "~$REAL_USER")
+COMPIZ_CONFIG="$REAL_HOME/.config/compiz/compizconfig"
+
+mkdir -p "$COMPIZ_CONFIG"
+
+cat > "$COMPIZ_CONFIG/Default.ini" <<'EOF'
+[core]
+active_plugins = core;composite;opengl;decor;move;resize;place;regex;animation;wobblywindows;fade;
+
+[animation]
+open_effects = animation:Zoom;
+close_effects = animation:Glide 2;
+minimize_effects = animation:None;
+unminimize_effects = animation:None;
+minimize_matches = (type=Normal | type=Dialog | type=ModalDialog | type=Unknown);
+unminimize_matches = (type=Normal | type=Dialog | type=ModalDialog | type=Unknown);
+
+[wobblywindows]
+friction = 3.0
+spring_k = 8.0
+
+[regex]
+enabled = true
+EOF
+
+chown -R "$REAL_USER:$REAL_USER" "$REAL_HOME/.config/compiz"
+
 if [ -n "$REAL_USER" ]; then
-    XAUTHORITY=$(eval echo "~$REAL_USER/.Xauthority")
+    XAUTHORITY="$REAL_HOME/.Xauthority"
     sudo -u "$REAL_USER" \
         DISPLAY=":0" \
         XAUTHORITY="$XAUTHORITY" \
