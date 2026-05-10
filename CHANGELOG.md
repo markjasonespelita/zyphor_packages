@@ -1,3 +1,10 @@
+## [1.25.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.25.1...v1.25.2) (2026-05-10)
+
+
+### Bug Fixes
+
+* fixed autostart zyphor-display-mac-v1 ([0a3e266](https://github.com/markjasonespelita/zyphor_packages/commit/0a3e26676b4d932c597f8726d13bc3d276ef2bf3))
+
 ## [1.25.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.25.0...v1.25.1) (2026-05-10)
 
 
