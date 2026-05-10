@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.25.0...v1.25.1) (2026-05-10)
+
+
+### Bug Fixes
+
+* added zyphor-display-mac-v1 - animations check and ALT+TAB view other windows. ([73aa380](https://github.com/markjasonespelita/zyphor_packages/commit/73aa380d06327810f1be5805e33a3eac7e086683))
+
 # [1.25.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.24.1...v1.25.0) (2026-05-10)
 
 
