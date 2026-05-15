@@ -1,0 +1,109 @@
+#!/bin/bash
+# =============================================================================
+# Zyphor OS — First Boot Setup
+# Applies Windows 11-style XFCE desktop with Zyphor branding
+# Runs once per user; subsequent logins exit immediately.
+# =============================================================================
+
+set -euo pipefail
+
+# ── Constants ─────────────────────────────────────────────────────────────────
+readonly FLAG="$HOME/.zyphor_firstboot_done"
+readonly PANEL_LAYOUT="/usr/share/xfce4-panel-profiles/layouts/Redmond 7.tar.bz2"
+readonly ZYPHOR_LOGO="/usr/share/pixmaps/zyphor-logo.png"
+readonly LOG_TAG="ZyphorFirstBoot"
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+log()  { echo "[$(date '+%H:%M:%S')] [INFO]  $*"; }
+warn() { echo "[$(date '+%H:%M:%S')] [WARN]  $*" >&2; }
+die()  { echo "[$(date '+%H:%M:%S')] [ERROR] $*" >&2; exit 1; }
+
+# ── Guard: run only once ──────────────────────────────────────────────────────
+if [[ -f "$FLAG" ]]; then
+    exit 0
+fi
+
+log "Starting Zyphor OS first-boot setup..."
+
+# ── Preflight checks ──────────────────────────────────────────────────────────
+[[ -f "$PANEL_LAYOUT" ]] || die "Panel layout not found: $PANEL_LAYOUT"
+[[ -f "$ZYPHOR_LOGO"  ]] || warn "Zyphor logo not found: $ZYPHOR_LOGO (branding step will be skipped)"
+
+command -v xfce4-panel          >/dev/null 2>&1 || die "xfce4-panel not found"
+command -v xfce4-panel-profiles >/dev/null 2>&1 || die "xfce4-panel-profiles not found"
+command -v xfconf-query         >/dev/null 2>&1 || die "xfconf-query not found"
+
+# ── Helper: wait for XFCE panel to be ready ───────────────────────────────────
+wait_for_panel() {
+    local attempts=0
+    local max=15
+    log "Waiting for xfce4-panel to be ready..."
+    while ! pgrep -x xfce4-panel >/dev/null 2>&1; do
+        (( attempts++ ))
+        if (( attempts >= max )); then
+            die "xfce4-panel did not start after ${max} seconds"
+        fi
+        sleep 1
+    done
+    log "Panel is ready."
+}
+
+# ── Helper: safely set an xfconf key ─────────────────────────────────────────
+xfconf_set() {
+    local channel="$1" prop="$2" type="$3" value="$4"
+    if ! xfconf-query -c "$channel" -p "$prop" -n -t "$type" -s "$value" 2>/dev/null; then
+        xfconf-query -c "$channel" -p "$prop" -s "$value" 2>/dev/null \
+            || warn "Could not set $channel:$prop — skipping"
+    fi
+}
+
+# ── 1. Load Redmond 7 panel layout ────────────────────────────────────────────
+log "Loading Redmond 7 panel layout..."
+xfce4-panel-profiles load "$PANEL_LAYOUT" \
+    || die "Failed to load panel layout"
+
+wait_for_panel
+sleep 1   # short grace period after panel signals readiness
+
+# ── 2. Apply Zyphor branding ──────────────────────────────────────────────────
+if [[ -f "$ZYPHOR_LOGO" ]]; then
+    log "Applying Zyphor branding to panel buttons..."
+    local_panel_dir="$HOME/.config/xfce4/panel"
+    if [[ -d "$local_panel_dir" ]]; then
+        find "$local_panel_dir" -name "*.rc" -print0 \
+            | xargs -0 sed -i "s|^button-icon=.*|button-icon=${ZYPHOR_LOGO}|" \
+            && log "Branding applied." \
+            || warn "Some panel .rc files could not be updated"
+    else
+        warn "Panel config directory not found; skipping branding"
+    fi
+else
+    warn "Skipping branding: logo file missing"
+fi
+
+# ── 3. Configure Windows 11-style panel layout ────────────────────────────────
+log "Configuring panel geometry..."
+
+# Clear old plugin list cleanly
+xfconf-query -c xfce4-panel -p /panels/panel-1/plugin-ids -rR 2>/dev/null || true
+
+# Position: bottom-center (p=10); size and span
+xfconf_set xfce4-panel /panels/panel-1/position    string "p=10;x=0;y=0"
+xfconf_set xfce4-panel /panels/panel-1/length      int    100
+xfconf_set xfce4-panel /panels/panel-1/size        int    40
+xfconf_set xfce4-panel /panels/panel-1/mode        int    0    # horizontal
+xfconf_set xfce4-panel /panels/panel-1/enter-opacity int  100
+xfconf_set xfce4-panel /panels/panel-1/leave-opacity int  100
+
+# ── 4. Apply theme ────────────────────────────────────────────────────────────
+log "Applying theme..."
+xfconf_set xsettings /Net/ThemeName string "Default"
+
+# ── 5. Restart panel to pick up all changes ───────────────────────────────────
+log "Restarting panel..."
+xfce4-panel --restart &
+wait_for_panel
+
+# ── 6. Mark setup complete ────────────────────────────────────────────────────
+touch "$FLAG" || die "Could not write flag file: $FLAG"
+log "Zyphor OS first-boot setup completed successfully."
