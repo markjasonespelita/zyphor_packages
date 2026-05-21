@@ -1,3 +1,14 @@
+# [1.26.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.25.2...v1.26.0) (2026-05-21)
+
+
+### Features
+
+* added guvcview, libreoffice, vlc, flameshot, drawing and simplescreenrecorder as dependency. ([d964b02](https://github.com/markjasonespelita/zyphor_packages/commit/d964b0216b27332868b14490368e1036f199b9c7))
+* added new feature zyphor-display-mac-v2 ([4fdd241](https://github.com/markjasonespelita/zyphor_packages/commit/4fdd241ac109ca2e9c2db1c5c3e9ff54fdab8f71))
+* added new package - os-release (this will be consistent on every updates.) ([2075c43](https://github.com/markjasonespelita/zyphor_packages/commit/2075c4335bb312312ea8b61d862bdcd10ff3bbb7))
+* ignored .deb files in the root directory and zyphor-os-updates directory. ([0629670](https://github.com/markjasonespelita/zyphor_packages/commit/062967086bdc764fefafd5a27106d93c7e2e5bb9))
+* modified .gitignore - added wallpapers folder to ignore .deb files inside wallpapers folder. ([25724d1](https://github.com/markjasonespelita/zyphor_packages/commit/25724d12ddb260572da376f9dbd01de65e761a0f))
+
 ## [1.25.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.25.1...v1.25.2) (2026-05-10)
 
 
