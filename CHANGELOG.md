@@ -1,3 +1,10 @@
+## [1.26.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.26.0...v1.26.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* fixed zyphor os release - postinst solution ([bf3970b](https://github.com/markjasonespelita/zyphor_packages/commit/bf3970b2073c94ceea293cde038abb99a0b6e850))
+
 # [1.26.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.25.2...v1.26.0) (2026-05-21)
 
 
