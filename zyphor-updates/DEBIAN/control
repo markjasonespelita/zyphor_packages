@@ -1,9 +1,9 @@
 Package: zyphor-updates
-Version: 1.3.0
+Version: 1.3.2
 Section: utils
 Priority: optional
 Architecture: all
-Depends: os-release,
+Depends: zyphor-os-release,
  fastfetch-config-1,
  grub-screensaver-1,
  zyphor-display-mac-v1,
