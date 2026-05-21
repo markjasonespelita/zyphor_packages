@@ -4,6 +4,9 @@
   "logo": {
     "type": "file",
     "source": "/etc/fastfetch/zyphor.txt",
+    "color": {
+      "1": "cyan"
+    },
     "padding": {
       "top": 1,
       "left": 2
@@ -12,16 +15,16 @@
 
   "modules": [
     {
-      "type": "title",
-      "format": "user@zyphor"
+      "type": "title"
     },
+
     "separator",
 
     {
       "type": "os",
-      "key": "OS",
-      "format": "Zyphor OS 1.7.0"
+      "key": "OS"
     },
+
     "kernel",
     "uptime",
     "packages",

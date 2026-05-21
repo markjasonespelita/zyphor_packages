@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+# Write Zyphor identity file
 cat > /usr/lib/os-release << 'EOF'
 PRETTY_NAME="Zyphor OS v1.9.0"
 NAME="Zyphor OS GNU/Linux"
@@ -12,9 +13,15 @@ ID_LIKE=debian
 HOME_URL="https://www.kali.org/"
 SUPPORT_URL="https://forums.kali.org/"
 BUG_REPORT_URL="https://bugs.kali.org/"
-ANSI_COLOR="1;31"
 EOF
 
 chmod 644 /usr/lib/os-release
+
+# Create /etc/os-release symlink safely
+if [ -e /etc/os-release ] && [ ! -L /etc/os-release ]; then
+    mv /etc/os-release /etc/os-release.bak
+fi
+
+ln -sf /usr/lib/os-release /etc/os-release
 
 exit 0
