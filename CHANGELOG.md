@@ -1,3 +1,10 @@
+## [1.26.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.26.1...v1.26.2) (2026-05-21)
+
+
+### Bug Fixes
+
+* fastfetch config fix (cyan) and zyphor os release - remove red by default ([ee27583](https://github.com/markjasonespelita/zyphor_packages/commit/ee275836f35cb8b843f1c1496199a7709e3491eb))
+
 ## [1.26.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.26.0...v1.26.1) (2026-05-21)
 
 
