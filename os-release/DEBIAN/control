@@ -1,0 +1,8 @@
+Package: os-release
+Version: 1.9.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash
+Maintainer: Mark Jason P. Espelita
+Description: Zyphor OS Release
