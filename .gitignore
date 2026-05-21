@@ -1,2 +1,3 @@
 *.deb
 /zyphor-os-updates/*.deb
+/wallpapers/*.deb
