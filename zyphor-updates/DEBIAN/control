@@ -1,5 +1,5 @@
 Package: zyphor-updates
-Version: 1.3.2
+Version: 1.4.0
 Section: utils
 Priority: optional
 Architecture: all
@@ -12,6 +12,7 @@ Depends: zyphor-os-release,
  vlc,
  flameshot,
  drawing,
- simplescreenrecorder
+ simplescreenrecorder,
+ ufw
 Maintainer: Mark Jason P. Espelita
 Description: Zyphor OS Updates
