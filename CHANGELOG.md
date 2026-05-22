@@ -1,3 +1,10 @@
+# [1.27.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.26.2...v1.27.0) (2026-05-22)
+
+
+### Features
+
+* added ufw - uncomplicated firewall to the zyphor updates and changed os release number to v1.10.0. ([1febc9f](https://github.com/markjasonespelita/zyphor_packages/commit/1febc9fb79842bcf15065949374f869e2aab7602))
+
 ## [1.26.2](https://github.com/markjasonespelita/zyphor_packages/compare/v1.26.1...v1.26.2) (2026-05-21)
 
 
