@@ -1,5 +1,5 @@
 Package: zyphor-os-release
-Version: 1.10.0
+Version: 2.1.0
 Section: utils
 Priority: optional
 Architecture: all
