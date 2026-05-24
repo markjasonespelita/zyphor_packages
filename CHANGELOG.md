@@ -1,3 +1,11 @@
+# [1.28.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.27.0...v1.28.0) (2026-05-24)
+
+
+### Features
+
+* changed the versioning scheme into vx.x.x-ux ([ed7ac7a](https://github.com/markjasonespelita/zyphor_packages/commit/ed7ac7a2cacebcb332458ec8b0701c45a89278c2))
+* transfer the large default packages into zyphor-updates so that iso build will consume less storage. ([50de878](https://github.com/markjasonespelita/zyphor_packages/commit/50de87855261d33406d26a62e71a172b597ea9e0))
+
 # [1.27.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.26.2...v1.27.0) (2026-05-22)
 
 
