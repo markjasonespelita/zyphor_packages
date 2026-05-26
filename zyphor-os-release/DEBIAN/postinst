@@ -3,16 +3,16 @@ set -e
 
 # Write Zyphor identity file
 cat > /usr/lib/os-release << 'EOF'
-PRETTY_NAME="Zyphor OS v1.10.0-u2"
+PRETTY_NAME="Zyphor OS v1.10.0-u3"
 NAME="Zyphor OS GNU/Linux"
 VERSION_ID="1.10.0"
 VERSION="1.10.0"
 VERSION_CODENAME=zyphor-os
 ID=zyphor-os
 ID_LIKE=debian
-HOME_URL="https://www.kali.org/"
-SUPPORT_URL="https://forums.kali.org/"
-BUG_REPORT_URL="https://bugs.kali.org/"
+HOME_URL="https://www.facebook.com/profile.php?id=61573426796629"
+SUPPORT_URL="https://www.facebook.com/mark.jason.penote.espelita"
+BUG_REPORT_URL="https://m.me/100009131763374"
 EOF
 
 chmod 644 /usr/lib/os-release
