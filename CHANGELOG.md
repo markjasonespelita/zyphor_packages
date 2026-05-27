@@ -1,3 +1,10 @@
+# [1.33.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.32.0...v1.33.0) (2026-05-27)
+
+
+### Features
+
+* added shell - default shell for zyphor os (zyshell) ([84b32e7](https://github.com/markjasonespelita/zyphor_packages/commit/84b32e7a6620d9012e18f7c5996b1c4cec92b0e0))
+
 # [1.32.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.31.0...v1.32.0) (2026-05-27)
 
 
