@@ -1,3 +1,10 @@
+## [1.33.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.33.0...v1.33.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* fixed right and left arrow key support, and changed the color of the hostname and username in the prompt. ([be06964](https://github.com/markjasonespelita/zyphor_packages/commit/be06964ad36550cf665b81a9be982943f1d50c07))
+
 # [1.33.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.32.0...v1.33.0) (2026-05-27)
 
 
