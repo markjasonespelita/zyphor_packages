@@ -1,3 +1,11 @@
 *.deb
 /zyphor-os-updates/*.deb
 /wallpapers/*.deb
+
+playground/init
+playground/forkSample
+playground/execvSample
+playground/execveSample
+playground/forkSnippet
+playground/execvSnippet
+playground/execveSnippet
