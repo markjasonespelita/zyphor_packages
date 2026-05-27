@@ -3,11 +3,20 @@
 
 int main() {
 
-    printf("Process... %d\n", getpid());
+    printf("Running fork snippet...\n");
 
-    fork();
+    pid_t pid = fork();
 
-    printf("Process... %d\n", getpid());
+    if (pid == 0) {
+        printf("I'm a child: %d\n", getpid());
+        
+        char *args[] = {"google-chrome", "https://google.com", NULL};
+
+        execv("/usr/bin/google-chrome", args);
+
+    } else {
+        printf("I'm a parent: %d\n", getpid());
+    }
 
     return 0;
 }
