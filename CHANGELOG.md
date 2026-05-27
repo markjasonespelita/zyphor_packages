@@ -1,3 +1,10 @@
+# [1.32.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.31.0...v1.32.0) (2026-05-27)
+
+
+### Features
+
+* combined fork() and execv() in a single forkSnippet.c file. ([d43cdf2](https://github.com/markjasonespelita/zyphor_packages/commit/d43cdf299fd26424a419af9f3f619ba3ece4c744))
+
 # [1.31.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.30.0...v1.31.0) (2026-05-27)
 
 
