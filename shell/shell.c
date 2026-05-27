@@ -75,7 +75,7 @@ char *build_prompt(void)
     size_t len = 64 + strlen(username) + strlen(hostname) + strlen(cwd);
     buf = malloc(len);
     snprintf(buf, len,
-        "\033[1;32m%s@%s\033[0m:\033[1;34m%s\033[0m$ ",
+        "\033[1;35m%s\033[0m@\033[1;36m%s\033[0m:\033[1;34m%s\033[0m$ ",
         username, hostname, cwd);
     return buf;
 }
@@ -94,9 +94,10 @@ void show_prompt(void)
 int read_line(char *out)
 {
     char  buf[BUFFER_SIZE] = {0};
-    int   len    = 0;       // current length of buf
-    int   hidx   = history_len; // index into history; history_len = "new input"
-    char  saved[BUFFER_SIZE] = {0}; // preserves edits before navigating history
+    int   len    = 0;
+    int   cursor = 0;           // ← new: cursor position within buf
+    int   hidx   = history_len;
+    char  saved[BUFFER_SIZE] = {0};
 
     char *prompt = build_prompt();
     fputs(prompt, stdout);
@@ -109,63 +110,83 @@ int read_line(char *out)
         if (read(STDIN_FILENO, &c, 1) <= 0) {
             raw_disable();
             free(prompt);
-            return -1; // EOF (Ctrl-D)
+            return -1;
         }
 
         if (c == '\r' || c == '\n') {
-            // commit
             putchar('\n');
             break;
 
         } else if (c == 127 || c == '\b') {
-            // backspace
-            if (len > 0) {
-                buf[--len] = '\0';
+            // backspace: delete char before cursor
+            if (cursor > 0) {
+                memmove(&buf[cursor - 1], &buf[cursor], len - cursor);
+                len--;
+                cursor--;
+                buf[len] = '\0';
                 redraw_line(prompt, buf);
+                // reposition cursor: move to end, then back
+                if (len > cursor) {
+                    printf("\033[%dD", len - cursor);
+                    fflush(stdout);
+                }
             }
 
         } else if (c == '\x1b') {
-            // escape sequence: read two more bytes
             unsigned char seq[2];
             if (read(STDIN_FILENO, &seq[0], 1) <= 0) continue;
             if (read(STDIN_FILENO, &seq[1], 1) <= 0) continue;
-
-            if (seq[0] != '[') continue; // unrecognised
+            if (seq[0] != '[') continue;
 
             if (seq[1] == 'A') {
-                // ↑ — go back in history
+                // ↑
                 if (hidx == history_len)
-                    // save whatever the user was typing
                     strncpy(saved, buf, BUFFER_SIZE);
-
                 if (hidx > 0) {
                     hidx--;
                     strncpy(buf, history[hidx], BUFFER_SIZE - 1);
-                    len = strlen(buf);
+                    len = cursor = strlen(buf);
                     redraw_line(prompt, buf);
                 }
 
             } else if (seq[1] == 'B') {
-                // ↓ — go forward in history
+                // ↓
                 if (hidx < history_len) {
                     hidx++;
-                    if (hidx == history_len)
-                        strncpy(buf, saved, BUFFER_SIZE - 1);
-                    else
-                        strncpy(buf, history[hidx], BUFFER_SIZE - 1);
-                    len = strlen(buf);
+                    const char *src = (hidx == history_len) ? saved : history[hidx];
+                    strncpy(buf, src, BUFFER_SIZE - 1);
+                    len = cursor = strlen(buf);
                     redraw_line(prompt, buf);
                 }
+
+            } else if (seq[1] == 'C') {
+                // →
+                if (cursor < len) {
+                    cursor++;
+                    printf("\033[C");
+                    fflush(stdout);
+                }
+
+            } else if (seq[1] == 'D') {
+                // ←
+                if (cursor > 0) {
+                    cursor--;
+                    printf("\033[D");
+                    fflush(stdout);
+                }
             }
-            // ← / → (seq[1]=='C'/'D') could be handled here later
 
         } else if (c >= 32 && c < 127) {
-            // printable character
             if (len < BUFFER_SIZE - 1) {
-                buf[len++] = c;
-                buf[len]   = '\0';
-                putchar(c);
-                fflush(stdout);
+                memmove(&buf[cursor + 1], &buf[cursor], len - cursor);
+                buf[cursor++] = c;
+                len++;              // ← only once
+                buf[len] = '\0';
+                redraw_line(prompt, buf);
+                if (len > cursor) {
+                    printf("\033[%dD", len - cursor);
+                    fflush(stdout);
+                }
             }
         }
     }
