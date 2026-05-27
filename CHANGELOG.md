@@ -1,3 +1,14 @@
+# [1.31.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.30.0...v1.31.0) (2026-05-27)
+
+
+### Features
+
+* added execveSnippet sample code. ([a257103](https://github.com/markjasonespelita/zyphor_packages/commit/a257103e4129451680bd291cf7a7700bec2c90e0))
+* added execvSnippet sample code. ([3fbb74a](https://github.com/markjasonespelita/zyphor_packages/commit/3fbb74a66821e4dc8253243eafb29e4a91db177a))
+* added forkSnippet sample code. ([1cefd9d](https://github.com/markjasonespelita/zyphor_packages/commit/1cefd9dab80929349209becb56b390d490ce63e3))
+* deleted playground/init executables. ([25fb7c2](https://github.com/markjasonespelita/zyphor_packages/commit/25fb7c2c65de217e21ff59720eed40b75ceda8db))
+* ignored files in the playground folder, like the init, execveSample/Snippet, execvSample/Snippet, and forkSample/Snippet files. ([ca85dbb](https://github.com/markjasonespelita/zyphor_packages/commit/ca85dbbbc911206d5751fad952ec942b3b4d78d1))
+
 # [1.30.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.29.0...v1.30.0) (2026-05-27)
 
 
