@@ -1,3 +1,10 @@
+# [1.30.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.29.0...v1.30.0) (2026-05-27)
+
+
+### Features
+
+* added playground folder for testing, debugging and creating custom packages. ([d63893c](https://github.com/markjasonespelita/zyphor_packages/commit/d63893cb7363b05942540e7449bcc6df303c6620))
+
 # [1.29.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.28.0...v1.29.0) (2026-05-26)
 
 
