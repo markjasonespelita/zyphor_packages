@@ -1,3 +1,13 @@
+# [1.36.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.35.0...v1.36.0) (2026-05-28)
+
+
+### Features
+
+* added command chaining and supports bash an zsh command execution style. ([e5b6ca3](https://github.com/markjasonespelita/zyphor_packages/commit/e5b6ca38fe904db9eb25ae0dd0537f60299f7c55))
+* added Makefile for easy compilation (make shell) ([d8b4b43](https://github.com/markjasonespelita/zyphor_packages/commit/d8b4b43e99a2f9929cd516216e13e0d5f6c8a8af))
+* added run command to easily envoke the shell executable. ([ebd5041](https://github.com/markjasonespelita/zyphor_packages/commit/ebd5041a1582a952ca909d808cb1fe3732473d33))
+* renamed packages into zyphor-shell ([d25b1bc](https://github.com/markjasonespelita/zyphor_packages/commit/d25b1bcb7192d817cd85bf55361ae4fb0063f869))
+
 # [1.35.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.34.1...v1.35.0) (2026-05-28)
 
 
