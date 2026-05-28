@@ -1,3 +1,13 @@
+# [1.34.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.33.1...v1.34.0) (2026-05-28)
+
+
+### Features
+
+* renamed zyphor-cli to cli for minimalistic project name. ([86a9b03](https://github.com/markjasonespelita/zyphor_packages/commit/86a9b0311befe7e26efc803f58c8fde4aeff1fb4))
+* renamed zyphor-command-center to command-center for minimalistic project name. ([e0fef62](https://github.com/markjasonespelita/zyphor_packages/commit/e0fef6297eaf7cfc92c20d2d80015b896430f670))
+* renamed zyphor-os-release to os-release for minimalistic project name. ([f292281](https://github.com/markjasonespelita/zyphor_packages/commit/f2922813baad01966dacbb61ad6fe1c5e105000d))
+* renamed zyphor-os-updates to os-updates for minimalistic project name. ([2e90749](https://github.com/markjasonespelita/zyphor_packages/commit/2e907495022a0e7746ee6829aaa0a98f1ddfa0a4))
+
 ## [1.33.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.33.0...v1.33.1) (2026-05-27)
 
 
