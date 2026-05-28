@@ -1,3 +1,10 @@
+# [1.35.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.34.1...v1.35.0) (2026-05-28)
+
+
+### Features
+
+* added a shell feature, git branch helper ([c0f1942](https://github.com/markjasonespelita/zyphor_packages/commit/c0f194252409bf2234da6f402fd9e209ab915e23))
+
 ## [1.34.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.34.0...v1.34.1) (2026-05-28)
 
 
