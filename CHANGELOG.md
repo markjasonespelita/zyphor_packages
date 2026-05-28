@@ -1,3 +1,10 @@
+## [1.34.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.34.0...v1.34.1) (2026-05-28)
+
+
+### Bug Fixes
+
+* fixed the wording Exiting zysh... to Exiting zyshell... ([94c3a9c](https://github.com/markjasonespelita/zyphor_packages/commit/94c3a9c9b697b4cebe387b67683b7f908a524e2a))
+
 # [1.34.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.33.1...v1.34.0) (2026-05-28)
 
 
