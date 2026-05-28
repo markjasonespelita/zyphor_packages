@@ -57,6 +57,61 @@ void redraw_line(const char *prompt_str, const char *buf)
     fflush(stdout);
 }
 
+// ── Git branch helper ─────────────────────────────────────────────────────────
+// Walks up the directory tree looking for a .git/HEAD file.
+// Fills `branch` (size `bsize`) with the branch name if found.
+// Returns 1 if inside a git repo, 0 otherwise.
+int get_git_branch(char *branch, size_t bsize)
+{
+    // path must hold cwd (up to 1024) + "/.git/HEAD" (10) + NUL
+    char path[1035];
+    char cwd[1024];
+
+    if (!getcwd(cwd, sizeof(cwd)))
+        return 0;
+
+    // Walk upward from cwd to filesystem root
+    char dir[1024];
+    strncpy(dir, cwd, sizeof(dir) - 1);
+
+    while (1) {
+        // Build path to .git/HEAD
+        snprintf(path, sizeof(path), "%s/.git/HEAD", dir);
+
+        FILE *f = fopen(path, "r");
+        if (f) {
+            char line[256];
+            if (fgets(line, sizeof(line), f)) {
+                // Strip trailing newline
+                line[strcspn(line, "\n")] = '\0';
+
+                // Typical content: "ref: refs/heads/main"
+                const char *prefix = "ref: refs/heads/";
+                if (strncmp(line, prefix, strlen(prefix)) == 0) {
+                    strncpy(branch, line + strlen(prefix), bsize - 1);
+                    branch[bsize - 1] = '\0';
+                } else {
+                    // Detached HEAD — show short commit hash
+                    strncpy(branch, line, 8);
+                    branch[8] = '\0';
+                }
+            }
+            fclose(f);
+            return 1;
+        }
+
+        // Move one level up
+        char *slash = strrchr(dir, '/');
+        if (!slash || slash == dir) {
+            // Reached the filesystem root without finding .git
+            break;
+        }
+        *slash = '\0';
+    }
+
+    return 0;
+}
+
 // ── Prompt builder ────────────────────────────────────────────────────────────
 // Returns a heap-allocated prompt string (caller must free).
 char *build_prompt(void)
@@ -64,6 +119,8 @@ char *build_prompt(void)
     char  hostname[256];
     char  cwd[1024];
     char *username;
+    char  branch[256];
+    char  branch_part[300] = "";
     char *buf;
 
     username = getenv("USER");
@@ -71,12 +128,19 @@ char *build_prompt(void)
     gethostname(hostname, sizeof(hostname));
     getcwd(cwd, sizeof(cwd));
 
-    // worst case: ANSI codes + strings + "$ \0"
-    size_t len = 64 + strlen(username) + strlen(hostname) + strlen(cwd);
+    // Build the git branch segment if we're inside a repo
+    if (get_git_branch(branch, sizeof(branch))) {
+        // yellow parens, cyan branch name
+        snprintf(branch_part, sizeof(branch_part),
+            " \033[1;33m(\033[1;36m%s\033[1;33m)\033[0m", branch);
+    }
+
+    // worst case: ANSI codes + strings + branch + "$ \0"
+    size_t len = 128 + strlen(username) + strlen(hostname) + strlen(cwd) + strlen(branch_part);
     buf = malloc(len);
     snprintf(buf, len,
-        "\033[1;35m%s\033[0m@\033[1;36m%s\033[0m:\033[1;34m%s\033[0m$ ",
-        username, hostname, cwd);
+        "\033[1;35m%s\033[0m@\033[1;36m%s\033[0m:\033[1;34m%s\033[0m%s$ ",
+        username, hostname, cwd, branch_part);
     return buf;
 }
 
@@ -95,7 +159,7 @@ int read_line(char *out)
 {
     char  buf[BUFFER_SIZE] = {0};
     int   len    = 0;
-    int   cursor = 0;           // ← new: cursor position within buf
+    int   cursor = 0;           // cursor position within buf
     int   hidx   = history_len;
     char  saved[BUFFER_SIZE] = {0};
 
@@ -180,7 +244,7 @@ int read_line(char *out)
             if (len < BUFFER_SIZE - 1) {
                 memmove(&buf[cursor + 1], &buf[cursor], len - cursor);
                 buf[cursor++] = c;
-                len++;              // ← only once
+                len++;
                 buf[len] = '\0';
                 redraw_line(prompt, buf);
                 if (len > cursor) {
