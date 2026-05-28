@@ -1,4 +1,4 @@
-// zysh - Zyphor OS Shell
+// zyshell - Zyphor OS Shell
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -345,6 +345,6 @@ int main(void)
         }
     }
 
-    printf("Exiting zysh...\n");
+    printf("Exiting zyshell...\n");
     return 0;
 }
