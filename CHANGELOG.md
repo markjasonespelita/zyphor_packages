@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.37.0...v1.38.0) (2026-05-30)
+
+
+### Features
+
+* added DOCUMENTATION file inside the helpers folder. ([172ab47](https://github.com/markjasonespelita/zyphor_packages/commit/172ab47173278ff4e0ece97efe147589cfecda5b))
+
 # [1.37.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.36.0...v1.37.0) (2026-05-30)
 
 
