@@ -1,3 +1,16 @@
+# [1.39.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.38.0...v1.39.0) (2026-05-30)
+
+
+### Features
+
+* added compile guiApp binary ([0b9250f](https://github.com/markjasonespelita/zyphor_packages/commit/0b9250fc996792b11390a462e9eed746fab1f41f))
+* added helperGUI library. ([7aac4aa](https://github.com/markjasonespelita/zyphor_packages/commit/7aac4aae19ea188040f9569403b588a23185f7cb))
+* added helperGUIDepends for future debain depends reference. ([01e0199](https://github.com/markjasonespelita/zyphor_packages/commit/01e0199c8a2d57d5e0287fa43228495b7a9f38ca))
+* added helperLayout library. ([f640e17](https://github.com/markjasonespelita/zyphor_packages/commit/f640e17abbba84c6bdedbb1cc24c1cb11ab9a343))
+* added helperWidgets library. ([02cd0f0](https://github.com/markjasonespelita/zyphor_packages/commit/02cd0f0d642a83de53dd409f860e6e0e7067c98f))
+* added makefile gui compilation ([0050072](https://github.com/markjasonespelita/zyphor_packages/commit/0050072fb82c1552e0b856052329a24ab3673f09))
+* modified main.c based on the latest test ([2e53858](https://github.com/markjasonespelita/zyphor_packages/commit/2e53858560e907dbf1682fd1e020e9f267b81f58))
+
 # [1.38.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.37.0...v1.38.0) (2026-05-30)
 
 
