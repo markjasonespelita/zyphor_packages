@@ -1,3 +1,20 @@
+# [1.40.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.39.0...v1.40.0) (2026-05-30)
+
+
+### Bug Fixes
+
+* fixed helperCommand header. ([46cc853](https://github.com/markjasonespelita/zyphor_packages/commit/46cc853c0b0efa7a0cda4d706e920e888978ceae))
+
+
+### Features
+
+* added -lcjson json type compilation in the Makefile. ([4c85a83](https://github.com/markjasonespelita/zyphor_packages/commit/4c85a8329bab3e2eab077932a96a20af7f37c72a))
+* added gui-main.c for GUI app template code reference. ([3da1fc2](https://github.com/markjasonespelita/zyphor_packages/commit/3da1fc21bf5e2f6dc333c19142f5cc4753159dea))
+* added json-main.c for json based app template code reference. ([f292bb9](https://github.com/markjasonespelita/zyphor_packages/commit/f292bb9f51ad3c50d58ad7e5d3cef7123a7fa9f7))
+* addeed data.json test.. ([a9d308b](https://github.com/markjasonespelita/zyphor_packages/commit/a9d308b9a6da55a22cbf0667feac9e63ac94674b))
+* helperCommand now supports command chaining and single argument commands. ([340ba26](https://github.com/markjasonespelita/zyphor_packages/commit/340ba26145742c6adf63a4b6d593f0ba2811456a))
+* make the main.c file updated by the latest testing. ([56f3fc9](https://github.com/markjasonespelita/zyphor_packages/commit/56f3fc9082c775c6800aebf2c149526fffcf9f8e))
+
 # [1.39.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.38.0...v1.39.0) (2026-05-30)
 
 
