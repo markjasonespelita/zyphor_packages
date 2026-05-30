@@ -1,3 +1,15 @@
+# [1.37.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.36.0...v1.37.0) (2026-05-30)
+
+
+### Features
+
+* added helperCommand for executing commands. ([8d4968c](https://github.com/markjasonespelita/zyphor_packages/commit/8d4968c749f5db9ce59c1cca93a852e99279b3f7))
+* added helperReadFile for reading files. ([409e894](https://github.com/markjasonespelita/zyphor_packages/commit/409e8940689ddf435bdd1362e3201f891ff4c3ae))
+* added main.c - edit the file based on the latest main.c test. ([ffe5f21](https://github.com/markjasonespelita/zyphor_packages/commit/ffe5f21c0531deda2ff38b846e12f9b878604400))
+* added test type in the makefile for compiling tests. ([8e08980](https://github.com/markjasonespelita/zyphor_packages/commit/8e08980149e8d883bcdd952aa01ea194bd91622b))
+* delete header files inside helpers folder. ([3f4b7eb](https://github.com/markjasonespelita/zyphor_packages/commit/3f4b7ebdd14b5a3bf9ac97e882ef370de90e55c1))
+* put/move the header files inside the helpers folder inside the helpers/headers folder. ([69c82ef](https://github.com/markjasonespelita/zyphor_packages/commit/69c82efbc55b6fc07ab483632fc6f0232b47f8cd))
+
 # [1.36.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.35.0...v1.36.0) (2026-05-28)
 
 
