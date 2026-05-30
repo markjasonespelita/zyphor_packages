@@ -8,5 +8,8 @@ compile:
 
 test:
 	$(CC) main.c \
-	helpers/helperReadFile.c \
+	helpers/helperGUI.c \
 	-o init
+
+gui:
+	$(CC) main.c helpers/helperGUI.c helpers/helperLayout.c helpers/helperWidgets.c -o guiApp `sdl2-config --cflags --libs` -lSDL2_ttf
