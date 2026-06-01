@@ -1,5 +1,5 @@
 Package: zyphor-updates
-Version: 2.0.0
+Version: 3.0.0
 Section: utils
 Priority: optional
 Architecture: all
@@ -33,6 +33,7 @@ Depends: zyphor-os-release,
  flameshot,
  drawing,
  simplescreenrecorder,
- ufw
+ ufw,
+ zyshell
 Maintainer: Mark Jason P. Espelita
 Description: Zyphor OS Updates
