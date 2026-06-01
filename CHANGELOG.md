@@ -1,3 +1,15 @@
+# [1.44.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.43.0...v1.44.0) (2026-06-01)
+
+
+### Bug Fixes
+
+* fixed shell issue left and right button and new line issue. ([9944d36](https://github.com/markjasonespelita/zyphor_packages/commit/9944d36704b31fb381da965a82551a08a4eb8211))
+
+
+### Features
+
+* updated the zyshell executable. ([239e799](https://github.com/markjasonespelita/zyphor_packages/commit/239e799bd50f125c1c17000840cbc054c13dec1f))
+
 # [1.43.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.42.0...v1.43.0) (2026-06-01)
 
 
