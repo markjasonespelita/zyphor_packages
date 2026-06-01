@@ -1,3 +1,11 @@
+## [1.40.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.40.0...v1.40.1) (2026-06-01)
+
+
+### Bug Fixes
+
+* fixed the folder name of zyshell into zyphor-shell in the Makefile. ([8b16e3b](https://github.com/markjasonespelita/zyphor_packages/commit/8b16e3b4e5b68d00c338dab7e2b6ad47c886b2c6))
+* fixed the folder name of zyshell into zyphor-shell in the shell/run file. ([73d6286](https://github.com/markjasonespelita/zyphor_packages/commit/73d628661aa0a9449fd0aab63e0a8607d1c9c73a))
+
 # [1.40.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.39.0...v1.40.0) (2026-05-30)
 
 
