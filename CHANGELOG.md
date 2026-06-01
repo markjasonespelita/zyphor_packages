@@ -1,3 +1,10 @@
+# [1.41.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.40.1...v1.41.0) (2026-06-01)
+
+
+### Features
+
+* updated the zyshell executable. ([0d81f5c](https://github.com/markjasonespelita/zyphor_packages/commit/0d81f5c352e9d042414b5f24c18524077be267c1))
+
 ## [1.40.1](https://github.com/markjasonespelita/zyphor_packages/compare/v1.40.0...v1.40.1) (2026-06-01)
 
 
