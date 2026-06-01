@@ -1,3 +1,12 @@
+# [1.42.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.41.0...v1.42.0) (2026-06-01)
+
+
+### Features
+
+* added json-lib.c for json library ([fe490a1](https://github.com/markjasonespelita/zyphor_packages/commit/fe490a1219c84702c3819cb79e28af984a3cfcf1))
+* added playground/object-main.c ([6b0220e](https://github.com/markjasonespelita/zyphor_packages/commit/6b0220e08f2f671441109b7a082ff5b6d1e95641))
+* reverted the main.c to it's default playground. ([965007d](https://github.com/markjasonespelita/zyphor_packages/commit/965007db69d5bd3de7092e775d476a69abd06b65))
+
 # [1.41.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.40.1...v1.41.0) (2026-06-01)
 
 
