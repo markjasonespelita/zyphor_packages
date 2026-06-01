@@ -1,3 +1,10 @@
+# [1.43.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.42.0...v1.43.0) (2026-06-01)
+
+
+### Features
+
+* make the main.c like the zyphor cli logic. ([0ba9c69](https://github.com/markjasonespelita/zyphor_packages/commit/0ba9c69947ae6d5f7e11110c5d6d667e2c4ed33d))
+
 # [1.42.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.41.0...v1.42.0) (2026-06-01)
 
 
