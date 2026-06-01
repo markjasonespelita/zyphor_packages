@@ -1,3 +1,12 @@
+# [1.45.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.44.0...v1.45.0) (2026-06-01)
+
+
+### Features
+
+* added zyshell as default shell when upgrading in zyphor os ([f30c2b3](https://github.com/markjasonespelita/zyphor_packages/commit/f30c2b344323c420bfc55097a0ca982741fdc0a6))
+* changed os release control version. ([0bb3fc4](https://github.com/markjasonespelita/zyphor_packages/commit/0bb3fc4b402065ce994d3a9cc52242d3bf2593bd))
+* changed the OS version inside postinst ([17b923f](https://github.com/markjasonespelita/zyphor_packages/commit/17b923f007fc9e584f675a7236d9f19d09564a2d))
+
 # [1.44.0](https://github.com/markjasonespelita/zyphor_packages/compare/v1.43.0...v1.44.0) (2026-06-01)
 
 
