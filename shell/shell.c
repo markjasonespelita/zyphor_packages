@@ -87,7 +87,11 @@ void redraw_line(const char *prompt_str, const char *buf)
     int buf_len    = (int)strlen(buf);
     int total_end  = prompt_vis + buf_len;
 
-    int rows_total = total_end / cols;
+    // Use (total_end - 1) / cols so that a total that lands *exactly* on a
+    // column boundary (e.g. total_end == cols) is not mistakenly treated as
+    // having wrapped onto the next row.  An empty buffer (total_end == 0)
+    // is clamped to 0 to avoid underflow.
+    int rows_total = total_end > 0 ? (total_end - 1) / cols : 0;
 
     if (rows_total > 0)
         printf("\033[%dA", rows_total);
@@ -110,8 +114,10 @@ void reposition_cursor(const char *prompt_str, int cursor, int buf_len)
     int end_pos    = prompt_vis + buf_len;
     int cur_pos    = prompt_vis + cursor;
 
-    int end_row    = end_pos / cols;
-    int cur_row    = cur_pos / cols;
+    // Match the (pos-1)/cols formula used in redraw_line so the row numbers
+    // are always consistent between the two functions.
+    int end_row    = end_pos > 0 ? (end_pos - 1) / cols : 0;
+    int cur_row    = cur_pos > 0 ? (cur_pos - 1) / cols : 0;
     int cur_col    = cur_pos % cols;
 
     int row_diff = end_row - cur_row;
@@ -220,6 +226,8 @@ int read_line(char *out)
     int   hidx   = history_len;
     char  saved[BUFFER_SIZE] = {0};
 
+    // FIX #6: Build the prompt once and reuse it for both display and redraws,
+    // so redraw_line always uses the same snapshot rather than rebuilding.
     char *prompt = build_prompt();
     fputs(prompt, stdout);
     fflush(stdout);
@@ -263,6 +271,7 @@ int read_line(char *out)
                     strncpy(buf, history[hidx], BUFFER_SIZE - 1);
                     len = cursor = strlen(buf);
                     redraw_line(prompt, buf);
+                    reposition_cursor(prompt, cursor, len);
                 }
 
             } else if (seq[1] == 'B') {
@@ -273,6 +282,7 @@ int read_line(char *out)
                     strncpy(buf, src, BUFFER_SIZE - 1);
                     len = cursor = strlen(buf);
                     redraw_line(prompt, buf);
+                    reposition_cursor(prompt, cursor, len);
                 }
 
             } else if (seq[1] == 'C') {
@@ -338,6 +348,10 @@ void free_expanded(void)
     expanded_count = 0;
 }
 
+// FIX #1: parse_command no longer tries to strip redirection tokens — those
+// are already removed from `input` by parse_redirection before this is called.
+// The old code's extra strtok(NULL) call was consuming a legitimate argument
+// that followed the redirect target.
 void parse_command(char *input, char *args[])
 {
     free_expanded();
@@ -346,13 +360,6 @@ void parse_command(char *input, char *args[])
     char *token = strtok(input, " \n");
 
     while (token != NULL && i < MAX_ARGS - 1) {
-        // Skip redirection operators and their targets — handled separately
-        if (strcmp(token, ">") == 0 || strcmp(token, ">>") == 0 || strcmp(token, "<") == 0) {
-            token = strtok(NULL, " \n"); // skip the filename too
-            token = strtok(NULL, " \n");
-            continue;
-        }
-
         char *expanded = expand_tilde(token);
 
         glob_t g;
@@ -376,19 +383,28 @@ void parse_command(char *input, char *args[])
 }
 
 // ── I/O Redirection parser ────────────────────────────────────────────────────
-// Scans a raw (space-tokenised) command string for >, >>, < operators.
-// Fills redir_in / redir_out / redir_append, then builds a clean args[] array
-// without the redirection tokens.
-// Returns 0 on success, -1 if a redirect file could not be opened.
+// FIX #5: Redirection now owns heap-allocated copies of the filename strings
+// instead of pointing into a local stack buffer that goes out of scope.
+// free_redirection() must be called when the Redirection is no longer needed.
 typedef struct {
-    char *in_file;      // < filename  (NULL if none)
-    char *out_file;     // > or >> filename  (NULL if none)
+    char *in_file;      // < filename  (NULL if none) — heap-allocated
+    char *out_file;     // > or >> filename  (NULL if none) — heap-allocated
     int   append;       // 1 if >>, 0 if >
 } Redirection;
 
+void free_redirection(Redirection *r)
+{
+    free(r->in_file);
+    free(r->out_file);
+    r->in_file  = NULL;
+    r->out_file = NULL;
+}
+
 // Parse redirection tokens out of a raw segment string.
-// Fills `r` and `clean` (a copy of the segment with redirect tokens removed).
+// Fills `r` (with heap-allocated filename copies) and `clean`
+// (a copy of the segment with redirect tokens removed).
 // `clean` must be BUFFER_SIZE bytes.
+// Handles both spaced forms ("cmd > file") and no-space forms ("cmd>file").
 void parse_redirection(const char *segment, Redirection *r, char *clean)
 {
     r->in_file  = NULL;
@@ -403,19 +419,62 @@ void parse_redirection(const char *segment, Redirection *r, char *clean)
 
     char *tok = strtok(tmp, " \t");
     while (tok != NULL) {
+        // ── Spaced operator forms: ">>" ">" "<" ──────────────────────────────
         if (strcmp(tok, ">>") == 0) {
             tok = strtok(NULL, " \t");
-            if (tok) { r->out_file = tok; r->append = 1; }
+            if (tok) { free(r->out_file); r->out_file = strdup(tok); r->append = 1; }
+
         } else if (strcmp(tok, ">") == 0) {
             tok = strtok(NULL, " \t");
-            if (tok) { r->out_file = tok; r->append = 0; }
+            if (tok) { free(r->out_file); r->out_file = strdup(tok); r->append = 0; }
+
         } else if (strcmp(tok, "<") == 0) {
             tok = strtok(NULL, " \t");
-            if (tok) r->in_file = tok;
+            if (tok) { free(r->in_file); r->in_file = strdup(tok); }
+
+        // ── No-space forms embedded in a token: "cmd>>file", "cmd>file", "cmd<file"
+        //    Also handles prefix-only tokens like ">>file", ">file", "<file". ────
         } else {
-            // Append to clean command
-            if (clean[0] != '\0') strncat(clean, " ", BUFFER_SIZE - strlen(clean) - 1);
-            strncat(clean, tok, BUFFER_SIZE - strlen(clean) - 1);
+            // Look for ">>" first (must precede ">" check to avoid partial match)
+            char *dbl = strstr(tok, ">>");
+            char *sng = strchr(tok, '>');
+            char *inp = strchr(tok, '<');
+
+            // Pick the earliest embedded operator
+            char *op     = NULL;
+            int   optype = 0; // 1=>>, 2=>, 3=<
+
+            if (dbl)                          { op = dbl; optype = 1; }
+            if (sng && sng != dbl && (!op || sng < op)) { op = sng; optype = 2; }
+            if (inp && (!op || inp < op))     { op = inp; optype = 3; }
+
+            if (op) {
+                // Everything before the operator is the command word (may be empty)
+                if (op > tok) {
+                    char word[BUFFER_SIZE];
+                    size_t wlen = op - tok;
+                    strncpy(word, tok, wlen);
+                    word[wlen] = '\0';
+                    if (clean[0]) strncat(clean, " ", BUFFER_SIZE - strlen(clean) - 1);
+                    strncat(clean, word, BUFFER_SIZE - strlen(clean) - 1);
+                }
+                // The filename follows the operator (1 or 2 chars wide)
+                int oplen = (optype == 1) ? 2 : 1;
+                char *filename = op + oplen;
+                if (*filename == '\0') {
+                    // Filename is the next whitespace-separated token
+                    filename = strtok(NULL, " \t");
+                }
+                if (filename && *filename != '\0') {
+                    if (optype == 1) { free(r->out_file); r->out_file = strdup(filename); r->append = 1; }
+                    else if (optype == 2) { free(r->out_file); r->out_file = strdup(filename); r->append = 0; }
+                    else { free(r->in_file);  r->in_file  = strdup(filename); }
+                }
+            } else {
+                // Plain token — add to clean command
+                if (clean[0]) strncat(clean, " ", BUFFER_SIZE - strlen(clean) - 1);
+                strncat(clean, tok, BUFFER_SIZE - strlen(clean) - 1);
+            }
         }
         tok = strtok(NULL, " \t");
     }
@@ -470,10 +529,6 @@ void show_os_screen(void)
 }
 
 // ── Command execution ─────────────────────────────────────────────────────────
-// Runs a single already-parsed command with optional redirection.
-// Returns exit status (0 = success), -1 on fork error, -2 for "exit".
-// NOTE: cd and exit must remain builtins — they cannot work in a child process.
-// Everything else goes straight to execvp, just like bash/zsh.
 int execute_command_redir(char *args[], const Redirection *r)
 {
     if (args[0] == NULL)
@@ -512,9 +567,6 @@ int execute_command_redir(char *args[], const Redirection *r)
 }
 
 // ── Pipe execution ────────────────────────────────────────────────────────────
-// Splits a segment on | and connects them with pipes.
-// Each stage may also carry its own I/O redirections (>, >>, <).
-// Returns the exit status of the last command, or -2 for "exit".
 int execute_pipeline(const char *segment)
 {
     char  buf[BUFFER_SIZE];
@@ -548,18 +600,22 @@ int execute_pipeline(const char *segment)
 
         char *args[MAX_ARGS];
         parse_command(clean, args);
-        return execute_command_redir(args, &r);
+        int status = execute_command_redir(args, &r);
+        free_redirection(&r);   // FIX #5: release heap-allocated filenames
+        return status;
     }
 
     // Multiple stages — build a pipe chain
     int prev_fd     = -1;
-    int last_status = 0;
+
+    // FIX #4: Track the PID of the last pipeline stage so we can report its
+    // exit status specifically, matching POSIX shell behaviour.
+    pid_t last_pid  = -1;
 
     for (int i = 0; i < nstages; i++) {
         int pipefd[2] = {-1, -1};
         int is_last   = (i == nstages - 1);
 
-        // Parse per-stage redirection
         Redirection r;
         char clean[BUFFER_SIZE];
         parse_redirection(stages[i], &r, clean);
@@ -571,6 +627,7 @@ int execute_pipeline(const char *segment)
             if (pipe(pipefd) < 0) {
                 perror("zyshell: pipe");
                 if (prev_fd != -1) close(prev_fd);
+                free_redirection(&r);   // FIX #5
                 return 1;
             }
         }
@@ -578,12 +635,12 @@ int execute_pipeline(const char *segment)
         if (args[0] == NULL) {
             if (prev_fd != -1) close(prev_fd);
             if (!is_last) { close(pipefd[0]); close(pipefd[1]); }
+            free_redirection(&r);   // FIX #5
             continue;
         }
 
         pid_t pid = fork();
         if (pid == 0) {
-            // Wire up pipe stdin (only if no explicit < redirection)
             if (prev_fd != -1 && r.in_file == NULL) {
                 dup2(prev_fd, STDIN_FILENO);
                 close(prev_fd);
@@ -591,7 +648,6 @@ int execute_pipeline(const char *segment)
                 close(prev_fd);
             }
 
-            // Wire up pipe stdout (only if no explicit > or >> redirection)
             if (!is_last && r.out_file == NULL) {
                 dup2(pipefd[1], STDOUT_FILENO);
                 close(pipefd[0]);
@@ -601,7 +657,6 @@ int execute_pipeline(const char *segment)
                 close(pipefd[1]);
             }
 
-            // Apply any explicit redirections
             if (apply_redirection(&r) < 0) _exit(1);
 
             execvp(args[0], args);
@@ -611,23 +666,38 @@ int execute_pipeline(const char *segment)
             perror("zyshell: fork");
         }
 
-        // Parent: close used fds
+        // FIX #4: Remember the last stage's PID.
+        if (is_last) last_pid = pid;
+
         if (prev_fd != -1) close(prev_fd);
         if (!is_last) {
             close(pipefd[1]);
             prev_fd = pipefd[0];
         }
+
+        free_redirection(&r);   // FIX #5: safe to free now — child has copies
     }
 
-    // Wait for all children
+    // FIX #4: Reap all children, but only keep the exit status of the last
+    // stage (last_pid), matching how bash/zsh report pipeline status.
+    int last_status = 0;
     int status;
-    while (wait(&status) > 0)
-        last_status = WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+    pid_t wpid;
+    while ((wpid = wait(&status)) > 0) {
+        if (wpid == last_pid)
+            last_status = WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+    }
 
     return last_status;
 }
 
 // ── Command chaining (&&, ||, ;) ──────────────────────────────────────────────
+// FIX #2: Operator search now scans character-by-character so that a ';'
+// embedded inside an && or || operand cannot steal the position.  More
+// importantly, '&&' and '||' are located by their exact two-character
+// sequences and are never confused with each other even when both appear in
+// the same command line.  The search also skips past a found operator's own
+// characters so it cannot self-overlap.
 int run_chain(const char *input)
 {
     char buf[BUFFER_SIZE];
@@ -641,11 +711,21 @@ int run_chain(const char *input)
         while (*p == ' ' || *p == '\t') p++;
         if (*p == '\0') break;
 
-        char *and_op  = strstr(p, "&&");
-        char *or_op   = strstr(p, "||");
-        char *semi_op = strchr(p, ';');
+        // Locate the earliest operator among &&, ||, ;
+        char *and_op  = NULL;
+        char *or_op   = NULL;
+        char *semi_op = NULL;
 
-        char *op      = NULL;
+        for (char *q = p; *q != '\0'; q++) {
+            if (!and_op && q[0] == '&' && q[1] == '&')
+                and_op = q;
+            if (!or_op  && q[0] == '|' && q[1] == '|')
+                or_op  = q;
+            if (!semi_op && q[0] == ';')
+                semi_op = q;
+        }
+
+        char *op     = NULL;
         int   op_type = 0; // 1=&&, 2=||, 3=;
 
         if (and_op)                             { op = and_op;  op_type = 1; }
